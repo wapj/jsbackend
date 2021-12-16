@@ -1,16 +1,40 @@
 const http = require("http");
 const url = require("url");
 
+http
+  .createServer((req, res) => {
+    const path = url.parse(req.url, true).pathname;
+    res.setHeader("Content-Type", "text/html");
+
+    if (req.method !== "GET") {
+      notAllowdMethod(req, res);
+      return;
+    }
+
+    if (path === "/user") {
+      user(req, res);
+    } else if (path === "/login") {
+      login(req, res);
+    } else if (path === "/feed") {
+      feed(res, req); // 2
+    } else {
+      notFound(req, res);
+    }
+  })
+  .listen(3000, () => {
+    console.log("서버 시작! 3000번 포트 사용");
+  });
+
 const userTemplate = (user) => {
   return `
-  <html>
-  <body>
-  <h1>User info </h1>
-  name : ${user.name} <br />
-  age : ${user.age}
-  </body>
-  </html>
-  `;
+    <html>
+    <body>
+    <h1>User info </h1>
+    name : ${user.name} <br />
+    age : ${user.age}
+    </body>
+    </html>
+    `;
 };
 
 const user = (req, res) => {
@@ -26,17 +50,17 @@ const user = (req, res) => {
 };
 
 const loginTemplate = `<html>
-<input type="text" placeholer="userid" /> <br />
-<input type="password" /> <br />
-<input type="submit" value="login">  
-</html>`;
+  <input type="text" placeholer="userid" /> <br />
+  <input type="password" /> <br />
+  <input type="submit" value="login">  
+  </html>`;
 const login = (req, res) => {
   res.end(loginTemplate);
 };
 
 const notFoundTemplate = `
-<h1>404 page not found</h1>
-`;
+  <h1>404 page not found</h1>
+  `;
 
 const notFound = (req, res) => {
   res.end(notFoundTemplate);
@@ -46,24 +70,11 @@ const notAllowdMethod = (req, res) => {
   res.end(`${req.method} is not allowed http method`);
 };
 
-http
-  .createServer((req, res) => {
-    const path = url.parse(req.url, true).pathname;
-    res.setHeader("Content-Type", "text/html");
-
-    if (req.method !== "GET") {
-      notAllowdMethod(req, res);
-      return;
-    }
-
-    if (path === "/user") {
-      user(req, res);
-    } else if (path === "/login") {
-      login(req, res);
-    } else {
-      notFound(req, res);
-    }
-  })
-  .listen(3000, () => {
-    console.log("서버 시작! 3000번 포트 사용");
-  });
+const feed = (req, res) => {
+  res.end(`<ul>
+          <li>picture1</li>
+          <li>picture2</li>
+          <li>picture3</li>
+        </ul>
+        `);
+};
