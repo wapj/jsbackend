@@ -1,5 +1,37 @@
 const http = require("http");
+const { homedir } = require("os");
 const url = require("url");
+
+const test = (req, res) => {
+  res.end("TEST");
+};
+
+const home = (req, res) => {
+  res.end("HOME");
+};
+
+const user = (req, res) => {
+  console.log(req);
+  const query = url.parse(req.url, true).query;
+  console.log(query);
+  res.end(userTemplate(query));
+};
+
+const feed = (req, res) => {
+  res.end(`<ul>
+          <li>picture1</li>
+          <li>picture2</li>
+          <li>picture3</li>
+        </ul>
+        `);
+};
+
+const urlMap = {
+  "/": home,
+  "/test": test,
+  "/user": user,
+  "/feed": feed,
+};
 
 http
   .createServer((req, res) => {
@@ -10,19 +42,16 @@ http
       notAllowdMethod(req, res);
       return;
     }
-
-    if (path === "/user") {
-      user(req, res);
-    } else if (path === "/login") {
-      login(req, res);
-    } else if (path === "/feed") {
-      feed(res, req); // 2
+    console.log(path);
+    console.log(Object.keys(urlMap));
+    if (path in urlMap) {
+      urlMap[path](req, res);
     } else {
       notFound(req, res);
     }
   })
   .listen(3000, () => {
-    console.log("서버 시작! 3000번 포트 사용");
+    console.log("심플 서버 시작");
   });
 
 const userTemplate = (user) => {
@@ -35,18 +64,6 @@ const userTemplate = (user) => {
     </body>
     </html>
     `;
-};
-
-const user = (req, res) => {
-  console.log(req);
-  const query = url.parse(req.url, true).query;
-  console.log(query);
-  // const user = {
-  //   name: "andy",
-  //   age: "30",
-  // };
-
-  res.end(userTemplate(query));
 };
 
 const loginTemplate = `<html>
@@ -68,13 +85,4 @@ const notFound = (req, res) => {
 
 const notAllowdMethod = (req, res) => {
   res.end(`${req.method} is not allowed http method`);
-};
-
-const feed = (req, res) => {
-  res.end(`<ul>
-          <li>picture1</li>
-          <li>picture2</li>
-          <li>picture3</li>
-        </ul>
-        `);
 };
