@@ -4,13 +4,12 @@ let count = 0;
 
 // 노드 서버 객체 생성
 const server = http.createServer((req, res) => {
-  console.log((count += 1));
-  // ❷
+  console.log((count += 1)); // ❷
   res.statusCode = 200; // ❸
   res.setHeader("Content-Type", "text/plain"); // ➍
   res.write("hello\n"); // ➎
-  setTimeout(() => {
-    // ➏
+  // prettier-ignore
+  setTimeout(() => { // ➏
     res.end("Node.js");
   }, 2000);
 });

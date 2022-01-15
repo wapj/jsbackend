@@ -1,12 +1,14 @@
-const express = require('express'); // 1
-const app = express();  // 2
-const port = 3000; 
+const express = require("express"); // ❶
+const app = express(); // ❷
+const port = 3000;
 
-app.get('/', (req, res) => { // 3
-    res.set({'Content-Type': 'text/html; charset=utf-8'}); // 4
-    res.end("헬로 express") // 5
-})
+// prettier-ignore
+app.get("/", (req, res) => { // ❸ 
+  res.set({ "Content-Type": "text/html; charset=utf-8" }); // ➍
+  res.end("헬로 express");
+});
 
-app.listen(port, () => { // 6
-    console.log(`START SERVER : use ${port}`)
-})
+// prettier-ignore
+app.listen(port, () => { // ➎
+  console.log(`START SERVER : use ${port}`);
+});
