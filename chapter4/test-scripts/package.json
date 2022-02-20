@@ -1,0 +1,13 @@
+{
+  "name": "test-scripts",
+  "version": "1.0.0",
+  "scripts": {
+    "prehello": "echo '<<<PRE HELLO>>>'",
+    "hello": "echo 'hello Node.js'",
+    "posthello": "echo '<<<POST HELLO>>>'",
+    "test": "echo 'test Node.js'",
+    "stop": "echo 'stop Node.js'",
+    "start": "echo 'start Node.js'",
+    "restart": "echo 'restart Node.js'"
+  }
+}
