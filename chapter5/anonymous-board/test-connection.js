@@ -3,8 +3,7 @@ const uri = "mongodb+srv://mymongo:test1234@cluster0.c4xru.mongodb.net/myFirstDa
 const client = new MongoClient(uri);
 client.connect(async (err) => {
   const adminConnection = client.db("test").admin();
-  await adminConnection.listDatabases((err, db) => {
-    if (!err) console.log(db);
-  });
+  const listDatabases = await adminConnection.listDatabases();
+  console.log(listDatabases);
   client.close();
 });
