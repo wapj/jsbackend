@@ -10,6 +10,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "express": "^4.17.3",
     "mongodb": "^4.4.0"
+  },
+  "devDependencies": {
+    "http-server": "^14.1.0",
+    "tailwindcss": "^3.0.23"
   }
 }
