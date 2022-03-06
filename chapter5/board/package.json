@@ -1,8 +1,8 @@
 {
-  "name": "anonymous-board",
+  "name": "board",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -11,7 +11,9 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.3",
-    "mongodb": "^4.4.0"
+    "express-handlebars": "^6.0.3",
+    "mongodb": "^4.4.0",
+    "mustache-express": "^1.3.2"
   },
   "devDependencies": {
     "http-server": "^14.1.0",
