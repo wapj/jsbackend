@@ -8,7 +8,8 @@ app.engine("handlebars", handlebars.engine());
 app.set("view engine", "handlebars");
 app.set("views", __dirname + "/views");
 
-// app.use("/statics", express.static(__dirname + "/statics"));
+// 정적파일 위치
+app.use("/statics", express.static(__dirname + "/statics"));
 
 // route
 app.get("/", (req, res) => {
