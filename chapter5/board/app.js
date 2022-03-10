@@ -13,7 +13,17 @@ app.use("/statics", express.static(__dirname + "/statics"));
 
 // route
 app.get("/", (req, res) => {
-  res.render("home", { title: "안녕하세요", message: "만나서 반갑습니다!" });
+  const onePost = {
+    idx: 311011,
+    title: "안녕하세요. 반갑습니다. 좋은 저녁입니다.",
+    writer: "앤디",
+    hits: 12345,
+    createdDt: "2022.03.11",
+  };
+
+  const posts = [onePost, onePost, onePost, onePost, onePost, onePost, onePost, onePost, onePost, onePost];
+
+  res.render("home", { title: "테스트 게시판", posts });
 });
 
 app.listen(3000);

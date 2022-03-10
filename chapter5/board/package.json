@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "daisyui": "^2.6.4",
     "express": "^4.17.3",
     "express-handlebars": "^6.0.3",
     "mongodb": "^4.4.0",

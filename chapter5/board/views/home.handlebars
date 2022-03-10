@@ -1,2 +1,43 @@
-<h2 class="text-3xl font-bold underline mb-5">{{title}}</h2>
-<p class="text-base">{{message}}</p>
+<div class="container mx-auto p-5 w-9/12">
+  <div class="text-3xl font-bold mb-10">{{title}}</div>
+  <div class="flex flex-row mb-5 space-x-2">
+    <input type="text" class="input input-sm input-bordered w-full" placeholder="검색어를 입력하세요." />
+    <button class="btn btn-sm">검색</button>
+    <button class="btn btn-sm btn-primary"> 글쓰기</button>
+  </div>
+  <div class="mb-5">
+    <table class="table w-full">
+      <thead>
+        <tr>
+          <th>번호</th>
+          <th>제목</th>
+          <th>작성자</th>
+          <th>조회수</th>
+          <th>등록일</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each posts}}
+          <tr>
+            <td>{{idx}}</td>
+            <td>{{title}}</td>
+            <td>{{writer}}</td>
+            <td>{{hits}}</td>
+            <td>{{createdDt}}</td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="flex justify-center">
+    <div class="btn-group">
+      <button class="btn btn-sm btn-outline">«</button>
+      <button class="btn btn-sm btn-outline btn-active">1</button>
+      <button class="btn btn-sm btn-outline">2</button>
+      <button class="btn btn-sm btn-outline">3</button>
+      <button class="btn btn-sm btn-outline">4</button>
+      <button class="btn btn-sm btn-outline">»</button>
+    </div>
+  </div>
+</div>
