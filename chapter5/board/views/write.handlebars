@@ -1,0 +1,34 @@
+<div class="container mx-auto p-5 w-9/12">
+  <div class="text-3xl font-bold mb-10">[{{title}}] 글 작성</div>
+
+  <div class="flex flex-col space-y-4 mb-5">
+    <div>
+      <label>제목</label>
+      <input type="text" name="title" class="input input-sm input-bordered w-full" placeholder="제목을 넣어주세요" />
+    </div>
+
+    <div>
+      <label>이름</label>
+      <input type="text" name="writer" class="input input-sm input-bordered w-full" placeholder="이름을 넣어주세요" />
+    </div>
+
+    <div>
+      <label>비밀번호</label>
+      <input
+        type="password"
+        name="pass"
+        class="input input-sm input-bordered w-full"
+        placeholder="비밀번호를 넣어주세요"
+      />
+    </div>
+
+    <div>
+      <label>본문을 입력하세요</label>
+      <textarea class="textarea textarea-bordered w-full" placeholder="본문" name="content" rows="10"></textarea>
+    </div>
+  </div>
+  <div class="flex justify-end space-x-4">
+    <button class="btn btn-sm btn-primary px-5">저장</button>
+    <button class="btn btn-sm px-5">취소</button>
+  </div>
+</div>
