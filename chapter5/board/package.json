@@ -5,7 +5,8 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "tailwind": "npx tailwindcss -i ./src/base.css -o ./statics/base.css --watch"
+    "tailwind": "npx tailwindcss -i ./src/base.css -o ./statics/base.css --watch",
+    "nodemon": "npx nodemon app.js"
   },
   "keywords": [],
   "author": "",
@@ -15,7 +16,8 @@
     "express": "^4.17.3",
     "express-handlebars": "^6.0.3",
     "mongodb": "^4.4.0",
-    "mustache-express": "^1.3.2"
+    "mustache-express": "^1.3.2",
+    "nodemon": "^2.0.15"
   },
   "devDependencies": {
     "http-server": "^14.1.0",
