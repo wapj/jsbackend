@@ -15,6 +15,8 @@ app.set("views", __dirname + "/views");
 // 정적파일 위치
 app.use("/statics", express.static(__dirname + "/statics"));
 
+app.listen(3000);
+
 // route
 app.get("/", (req, res) => {
   const onePost = {
@@ -50,5 +52,3 @@ app.get("/detail", (req, res) => {
     ],
   });
 });
-
-app.listen(3000);

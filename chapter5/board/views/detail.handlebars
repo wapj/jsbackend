@@ -1,10 +1,10 @@
 <div class="container mx-auto p-5 w-9/12">
   <header class="bg-white shadow">
-    <div class="max-w-7xl mx-auto p-4 mb-5">
+    <div class="p-4 mb-5">
       <h1 class="text-3xl font-bold text-gray-700">{{boardTitle}}</h1>
     </div>
   </header>
-  <main>
+  {{!-- <main>
     <div class="border-b-2 mb-5">
       <h3 class="text-xl">{{title}}</h3>
     </div>
@@ -31,7 +31,8 @@
         <pre class="overflow-scroll p-3 border-2 border-gray-200 h-96">{{content}}</pre>
       </div>
     </div>
-
+  </main>
+  <section>
     <div class="border-2 p-2 mb-5">
       <h3 class="text-xl">{{comments.length}}개의 댓글이 있습니다.</h3>
     </div>
@@ -45,9 +46,9 @@
         <textarea class="textarea textarea-bordered w-full" rows="3" placeholder="댓글을입력해주세요."></textarea>
         <button class="btn btn-sm btn-primary">댓글쓰기</button>
       </div>
-
     </div>
-
+  </section>
+  <section>
     <div class="comments space-y-2">
       {{#each comments}}
         <div class="border-b-2 pb-1">
@@ -70,8 +71,10 @@
         </div>
       {{/each}}
     </div>
+  </section>
+  <footer>
     <div class="mt-10">
       <button class="btn btn-block">목록으로</button>
     </div>
-  </main>
+  </footer> --}}
 </div>
