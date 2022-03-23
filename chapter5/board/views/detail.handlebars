@@ -4,7 +4,7 @@
       <h1 class="text-3xl font-bold text-gray-700">{{boardTitle}}</h1>
     </div>
   </header>
-  {{!-- <main>
+  <main>
     <div class="border-b-2 mb-5">
       <h3 class="text-xl">{{title}}</h3>
     </div>
@@ -26,10 +26,8 @@
       </div>
     </div>
 
-    <div class="max-w-7xl mx-auto">
-      <div class="py-6 sm:px-0">
-        <pre class="overflow-scroll p-3 border-2 border-gray-200 h-96">{{content}}</pre>
-      </div>
+    <div class="py-6">
+      <pre class="overflow-scroll p-3 border-2 border-gray-200 h-96">{{content}}</pre>
     </div>
   </main>
   <section>
@@ -48,6 +46,7 @@
       </div>
     </div>
   </section>
+
   <section>
     <div class="comments space-y-2">
       {{#each comments}}
@@ -72,9 +71,10 @@
       {{/each}}
     </div>
   </section>
+
   <footer>
     <div class="mt-10">
-      <button class="btn btn-block">목록으로</button>
+      <a class="btn btn-block" href="/">목록으로</a>
     </div>
-  </footer> --}}
+  </footer>
 </div>

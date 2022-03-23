@@ -15,8 +15,6 @@ app.set("views", __dirname + "/views");
 // 정적파일 위치
 app.use("/statics", express.static(__dirname + "/statics"));
 
-app.listen(3000);
-
 // route
 app.get("/", (req, res) => {
   const onePost = {
@@ -39,16 +37,17 @@ app.get("/write", (req, res) => {
 app.get("/detail", (req, res) => {
   res.render("detail", {
     boardTitle: "테스트 게시판",
-    title: "안녕하세요",
-    name: "andy.sg",
-    hits: 123123,
+    title: "게시판 글쓰기 테스트",
+    name: "andy",
+    hits: 123456789,
     createdDt: "2022-03-22",
-    content:
-      "안녕하세요~!\nNode.js 책 열심히 썼습니다!\n읽어보시면 후회 안하실 거예요!\n안녕하세요~!\nNode.js 책 열심히 썼습니다!\n읽어보시면 후회 안하실 거예요!\n안녕하세요~!\nNode.js 책 열심히 썼습니다!\n읽어보시면 후회 안하실 거예요!\n안녕하세요~!\nNode.js 책 열심히 썼습니다!\n읽어보시면 후회 안하실 거예요!\n안녕하세요~!\nNode.js 책 열심히 썼습니다!\n읽어보시면 후회 안하실 거예요!\n안녕하세요~!\nNode.js 책 열심히 썼습니다!\n읽어보시면 후회 안하실 거예요!\n안녕하세요~!\nNode.js 책 열심히 썼습니다!\n읽어보시면 후회 안하실 거예요!\n안녕하세요~!\nNode.js 책 열심히 썼습니다!\n읽어보시면 후회 안하실 거예요!\n안녕하세요~!\nNode.js 책 열심히 썼습니다!\n읽어보시면 후회 안하실 거예요!\n안녕하세요~!\nNode.js 책 열심히 썼습니다!\n읽어보시면 후회 안하실 거예요!\n안녕하세요~!\nNode.js 책 열심히 썼습니다!\n읽어보시면 후회 안하실 거예요!\n안녕하세요~!\nNode.js 책 열심히 썼습니다!\n읽어보시면 후회 안하실 거예요!\n안녕하세요~!\nNode.js 책 열심히 썼습니다!\n읽어보시면 후회 안하실 거예요!\n안녕하세요~!\nNode.js 책 열심히 썼습니다!\n읽어보시면 후회 안하실 거예요!\n",
+    content: "안녕하세요~!\ntailwind와 daisyui로 만드는 게시판입니다.\n잘 완성 해봅시다.",
     comments: [
-      { name: "앤디", comment: "하이", createdDt: "2022-03-13" },
-      { name: "앤디", comment: "하이", createdDt: "2022-03-13" },
-      { name: "앤디", comment: "하이", createdDt: "2022-03-13" },
+      { name: "승귤", comment: "안녕하세요! \nNode.js 공부중이예요!", createdDt: "2022-03-13" },
+      { name: "앤디", comment: "방갑습니다! \ntailwind로 만든 디자인 깔끔하군요!", createdDt: "2022-03-14" },
+      { name: "지현", comment: "좋네요! \n저도 게시판 만들고 있는데 좋아요!", createdDt: "2022-03-24" },
     ],
   });
 });
+
+app.listen(3000);
