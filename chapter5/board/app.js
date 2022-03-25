@@ -2,6 +2,17 @@ const express = require("express");
 const handlebars = require("express-handlebars");
 const app = express();
 
+const mongodbConnection = require("./configs/mongodb-connection");
+
+let client;
+mongodbConnection(function (err, mongoClient) {
+  if (err) throw err;
+  client = mongoClient;
+  console.dir(client);
+  app.listen(3000);
+  console.log("START!");
+});
+
 // config
 app.engine(
   "handlebars",
@@ -14,6 +25,10 @@ app.set("views", __dirname + "/views");
 
 // 정적파일 위치
 app.use("/statics", express.static(__dirname + "/statics"));
+
+// req.body와 post요청을 해석하기 위한 설정
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // route
 app.get("/", (req, res) => {
@@ -34,6 +49,14 @@ app.get("/write", (req, res) => {
   res.render("write", { title: "테스트 게시판" });
 });
 
+app.post("/write", (req, res) => {
+  console.log(req.body);
+
+  client.db().collection("post").insertOne(req.body);
+  // 나중에는 해당 글의 페이지로 리다이렉트 한다.
+  res.redirect("/");
+});
+
 app.get("/detail", (req, res) => {
   res.render("detail", {
     boardTitle: "테스트 게시판",
@@ -49,5 +72,3 @@ app.get("/detail", (req, res) => {
     ],
   });
 });
-
-app.listen(3000);
