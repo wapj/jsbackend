@@ -84,18 +84,17 @@ app.delete("/delete/:id", async (req, res) => {
   }
 });
 
-app.get("/detail", (req, res) => {
+app.get("/detail/:id", async (req, res) => {
+  // 패스워드는 노출 할 필요가 없으므로 결과값으로 가져오지않음.
+  const option = {
+    projection: {
+      // 프로젝션(투영) 결과값에서 일부만 가져올 때 사용함.
+      password: 0,
+    },
+  };
+  const post = await collection.findOne({ _id: ObjectId(req.params.id) }, option);
   res.render("detail", {
-    boardTitle: "테스트 게시판",
-    title: "게시판 글쓰기 테스트",
-    name: "andy",
-    hits: 123456789,
-    createdDt: "2022-03-22",
-    content: "안녕하세요~!\ntailwind와 daisyui로 만드는 게시판입니다.\n잘 완성 해봅시다.",
-    comments: [
-      { name: "승귤", comment: "안녕하세요! \nNode.js 공부중이예요!", createdDt: "2022-03-13" },
-      { name: "앤디", comment: "방갑습니다! \ntailwind로 만든 디자인 깔끔하군요!", createdDt: "2022-03-14" },
-      { name: "지현", comment: "좋네요! \n저도 게시판 만들고 있는데 좋아요!", createdDt: "2022-03-24" },
-    ],
+    title: "테스트 게시판",
+    post,
   });
 });

@@ -1,5 +1,5 @@
 module.exports = {
-  lengthOfList: function (list) {
+  lengthOfList: function (list = []) {
     return list.length;
   },
   isEqual: function (val1, val2) {
