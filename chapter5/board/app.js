@@ -1,14 +1,19 @@
 const express = require("express");
+
 const handlebars = require("express-handlebars");
 const app = express();
 
 const mongodbConnection = require("./configs/mongodb-connection");
+const { ObjectID, ObjectId } = require("mongodb");
 
-let client;
+const PER_PAGE = 10;
+
+let collection;
 mongodbConnection(function (err, mongoClient) {
   if (err) throw err;
-  client = mongoClient;
-  console.dir(client);
+
+  const client = mongoClient;
+  collection = client.db().collection("post");
   app.listen(3000);
   console.log("START!");
 });
@@ -16,9 +21,9 @@ mongodbConnection(function (err, mongoClient) {
 // config
 app.engine(
   "handlebars",
-  handlebars.engine({
-    helper: require("./configs/handlebars-helpers"),
-  }),
+  handlebars.create({
+    helpers: require("./configs/handlebars-helpers"),
+  }).engine,
 );
 app.set("view engine", "handlebars");
 app.set("views", __dirname + "/views");
@@ -32,17 +37,18 @@ app.use(express.urlencoded({ extended: true }));
 
 // route
 app.get("/", (req, res) => {
-  const onePost = {
-    idx: 311011,
-    title: "안녕하세요. 반갑습니다. 좋은 저녁입니다.",
-    writer: "앤디",
-    hits: 12345,
-    createdDt: "2022.03.11",
-  };
-
-  const posts = [onePost, onePost, onePost, onePost, onePost, onePost, onePost, onePost, onePost, onePost];
-
-  res.render("home", { title: "테스트 게시판", posts });
+  const page = parseInt(req.query.page) || 1;
+  const search = req.query.search || "";
+  const query = { title: new RegExp(search, "i") };
+  const options = { limit: PER_PAGE, skip: (page - 1) * PER_PAGE };
+  collection.find(query, options).toArray(async (err, posts) => {
+    if (err) {
+      return res.render("home", { title: "테스트 게시판" });
+    }
+    const totalCount = await collection.count(query);
+    const paginator = require("./utils/paginator")({ totalCount, page, perPage: PER_PAGE });
+    res.render("home", { title: "테스트 게시판", search, paginator, posts });
+  });
 });
 
 app.get("/write", (req, res) => {
@@ -51,10 +57,31 @@ app.get("/write", (req, res) => {
 
 app.post("/write", (req, res) => {
   console.log(req.body);
-
-  client.db().collection("post").insertOne(req.body);
-  // 나중에는 해당 글의 페이지로 리다이렉트 한다.
+  const post = req.body;
+  // 생성일시와 조회수를 넣어준다.
+  post.hits = 0;
+  post.createdDt = new Date().toISOString();
+  collection.insertOne(req.body);
+  // TODO 상세페이지를 만들고나서 해당 글의 페이지로 리다이렉트 한다.
   res.redirect("/");
+});
+
+app.delete("/delete/:id", async (req, res) => {
+  // id로 삭제
+  try {
+    const result = await collection.deleteOne({ _id: ObjectId(req.params.id) });
+    if (result.deletedCount === 1) {
+      console.log("삭제성공");
+    } else {
+      console.log("삭제실패");
+    }
+
+    // 목록으로
+    res.redirect("/");
+  } catch (error) {
+    console.error(error);
+    res.redirect("/");
+  }
 });
 
 app.get("/detail", (req, res) => {
