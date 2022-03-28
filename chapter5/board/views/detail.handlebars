@@ -22,8 +22,8 @@
           | 작성일시 :
           {{dateString createdDt}}
 
-          <button class="btn btn-xs btn-primary">수정</button>
-          <button class="btn btn-xs btn-warning">삭제</button>
+          <button class="btn btn-xs btn-primary" onclick="modifyPost()">수정</button>
+          <button class="btn btn-xs btn-warning" onclick="deletePost()">삭제</button>
         </div>
       </div>
 
@@ -80,3 +80,20 @@
     </div>
   </footer>
 </div>
+
+<script type="text/javascript">
+
+  function modifyPost() {    
+    const password = prompt("패스워드를 입력해주세요");
+    console.log(password);
+    // fetch()
+    
+  } 
+
+  function deletePost() {
+    if (confirm("글을 수정하시겠습니까?")) { 
+      alert("삭제"); 
+      const password = prompt("패스워드를 입력해주세요");
+    }
+  }
+</script>

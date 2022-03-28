@@ -1,6 +1,7 @@
 <div class="container mx-auto p-5 w-9/12">
   <div class="text-3xl font-bold mb-10">[{{title}}] 글 작성</div>
-
+  
+  {{#with post}}
   <form name="boardForm" method="post" action="/write">
     <div class="flex flex-col space-y-4 mb-5">
       <div>
@@ -34,4 +35,5 @@
       <button type="button" onclick="location.href='/'" class="btn btn-sm px-5">취소</button>
     </div>
   </form>
+  {{/with}}
 </div>

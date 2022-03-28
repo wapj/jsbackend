@@ -51,8 +51,12 @@ app.get("/", (req, res) => {
   });
 });
 
-app.get("/write", (req, res) => {
+app.get("/write/:id", (req, res) => {
   res.render("write", { title: "테스트 게시판" });
+});
+
+app.get("/check-password/:password", (req, res) => {
+  
 });
 
 app.post("/write", (req, res) => {
