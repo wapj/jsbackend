@@ -81,19 +81,53 @@
   </footer>
 </div>
 
-<script type="text/javascript">
-
-  function modifyPost() {    
-    const password = prompt("패스워드를 입력해주세요");
-    console.log(password);
-    // fetch()
-    
-  } 
-
-  function deletePost() {
-    if (confirm("글을 수정하시겠습니까?")) { 
-      alert("삭제"); 
-      const password = prompt("패스워드를 입력해주세요");
+{{! prettier-ignore }}
+<script>
+  async function modifyPost() { 
+    const password = prompt("패스워드를 입력해주세요"); 
+    // 프롬프트에서 취소를 누른경우 처리 
+    if (!password) {
+      return;
     }
+    const data = await fetch("/check-password", { 
+      method: 'POST', 
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ id: "{{post._id}}", password }) 
+    }).then(res => res.json());
+    
+    const {isExist} = data;
+    
+    if (isExist) {
+      document.location = "/modify/{{post._id}}"
+    } else {
+      alert("패스워드가 올바르지 않습니다.");
+    }
+  }
+  
+  async function deletePost() {     
+    const password = prompt("삭제하시려면 패스워드를 입력해주세요");
+    // 프롬프트에서 취소를 누른경우 처리 
+    if (!password) {
+      return;
+    }
+    const data = await fetch("/delete", { 
+      method: 'DELETE', 
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ id: "{{post._id}}", password }) 
+    }).then(res => res.json());
+    
+    const {isSuccess} = data;
+    
+    if (!isSuccess) {
+      alert("삭제에 실패했습니다. 패스워드를 확인해주세요.");
+      return;
+    }
+    
+    alert("삭제 성공. 리스트로 이동합니다.");
+    document.location = "/";     
   }
 </script>

@@ -1,10 +1,10 @@
 const express = require("express");
-
 const handlebars = require("express-handlebars");
-const app = express();
+const { ObjectId } = require("mongodb");
 
+const app = express();
 const mongodbConnection = require("./configs/mongodb-connection");
-const { ObjectID, ObjectId } = require("mongodb");
+const { getPostById, getPostByIdAndPassword } = require("./services/post-service");
 
 const PER_PAGE = 10;
 
@@ -35,12 +35,13 @@ app.use("/statics", express.static(__dirname + "/statics"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// route
+// 리스트 페이지
 app.get("/", (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const search = req.query.search || "";
   const query = { title: new RegExp(search, "i") };
   const options = { limit: PER_PAGE, skip: (page - 1) * PER_PAGE };
+
   collection.find(query, options).toArray(async (err, posts) => {
     if (err) {
       return res.render("home", { title: "테스트 게시판" });
@@ -51,52 +52,82 @@ app.get("/", (req, res) => {
   });
 });
 
-app.get("/write/:id", (req, res) => {
-  res.render("write", { title: "테스트 게시판" });
+// 쓰기 페이지 이동
+app.get("/write", (req, res) => {
+  res.render("write", { title: "테스트 게시판", mode: "create" });
 });
 
-app.get("/check-password/:password", (req, res) => {
-  
+// 수정 페이지로 이동
+app.get("/modify/:id", async (req, res) => {
+  const { id } = req.params.id;
+
+  const post = await getPostById(collection, req.params.id);
+  console.log(post);
+  res.render("write", { title: "테스트 게시판 ", mode: "modify", post });
 });
 
-app.post("/write", (req, res) => {
-  console.log(req.body);
+app.post("/modify/", async (req, res) => {
+  const { id, title, writer, password, content } = req.body;
+
+  const post = {
+    title,
+    writer,
+    password,
+    content,
+    hits: 0,
+    createdDt: new Date().toISOString(),
+  };
+
+  const updateDocument = {
+    $set: {
+      ...post,
+    },
+  };
+
+  const result = await collection.updateOne({ _id: ObjectId(id) }, updateDocument);
+
+  res.redirect(`/detail/${id}`);
+});
+
+app.post("/check-password", async (req, res) => {
+  const { id, password } = req.body;
+  const post = getPostByIdAndPassword(collection, { id, password });
+  if (!post) {
+    return res.status(404).json({ isExist: false });
+  } else {
+    return res.json({ isExist: true });
+  }
+});
+
+app.post("/write", async (req, res) => {
   const post = req.body;
   // 생성일시와 조회수를 넣어준다.
   post.hits = 0;
   post.createdDt = new Date().toISOString();
-  collection.insertOne(req.body);
-  // TODO 상세페이지를 만들고나서 해당 글의 페이지로 리다이렉트 한다.
-  res.redirect("/");
+  const result = await collection.insertOne(post);
+  res.redirect(`/detail/${result.insertedId}`);
 });
 
-app.delete("/delete/:id", async (req, res) => {
+app.delete("/delete", async (req, res) => {
+  const { id, password } = req.body;
   // id로 삭제
   try {
-    const result = await collection.deleteOne({ _id: ObjectId(req.params.id) });
-    if (result.deletedCount === 1) {
-      console.log("삭제성공");
-    } else {
+    const result = await collection.deleteOne({ _id: ObjectId(id), password: password });
+    if (result.deletedCount !== 1) {
       console.log("삭제실패");
+      return res.json({ isSuccess: false });
     }
 
-    // 목록으로
-    res.redirect("/");
+    // 삭제성공인 경우 리다이렉트
+    return res.json({ isSuccess: true });
   } catch (error) {
     console.error(error);
-    res.redirect("/");
+    return res.json({ isSuccess: false });
   }
 });
 
 app.get("/detail/:id", async (req, res) => {
-  // 패스워드는 노출 할 필요가 없으므로 결과값으로 가져오지않음.
-  const option = {
-    projection: {
-      // 프로젝션(투영) 결과값에서 일부만 가져올 때 사용함.
-      password: 0,
-    },
-  };
-  const post = await collection.findOne({ _id: ObjectId(req.params.id) }, option);
+  const post = await getPostById(collection, req.params.id);
   res.render("detail", {
     title: "테스트 게시판",
     post,
