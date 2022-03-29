@@ -36,16 +36,24 @@
         <h3 class="text-xl">{{lengthOfList comments}}개의 댓글이 있습니다.</h3>
       </div>
 
-      <div class="mb-10">
-        <div class="mb-5">
-          <input type="text" class="input input-sm input-bordered" placeholder="이름" />
-          <input type="password" class="input input-sm input-bordered" placeholder="비밀번호" />
+      <form method="post" action="/write-comment">
+        <input type="hidden" name="id" value="{{_id}}" />
+        <div class="mb-10">
+          <div class="mb-5">
+            <input type="text" name="name" class="input input-sm input-bordered" placeholder="이름" />
+            <input type="password" name="password" class="input input-sm input-bordered" placeholder="비밀번호" />
+          </div>
+          <div class="space-y-3">
+            <textarea
+              class="textarea textarea-bordered w-full"
+              rows="3"
+              name="comment"
+              placeholder="댓글을 입력해주세요."
+            ></textarea>
+            <button class="btn btn-sm btn-primary">댓글쓰기</button>
+          </div>
         </div>
-        <div class="space-y-3">
-          <textarea class="textarea textarea-bordered w-full" rows="3" placeholder="댓글을입력해주세요."></textarea>
-          <button class="btn btn-sm btn-primary">댓글쓰기</button>
-        </div>
-      </div>
+      </form>
     </section>
 
     <section>
@@ -60,9 +68,9 @@
               </div>
               <div class="flex-row-reverse">
                 작성일시 :
-                {{createdDt}}
+                {{dateString createdDt}}
 
-                <button class="btn btn-xs btn-warning">삭제</button>
+                <button class="btn btn-xs btn-warning" onclick="deleteComment('{{idx}}')">삭제</button>
               </div>
             </div>
           </div>
@@ -83,6 +91,21 @@
 
 {{! prettier-ignore }}
 <script>
+  
+  const deleteOption = {
+    method: 'DELETE', 
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  }
+  
+  const postOption = {
+    method: 'POST', 
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  }
+  
   async function modifyPost() { 
     const password = prompt("패스워드를 입력해주세요"); 
     // 프롬프트에서 취소를 누른경우 처리 
@@ -90,10 +113,7 @@
       return;
     }
     const data = await fetch("/check-password", { 
-      method: 'POST', 
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      ...postOption,
       body: JSON.stringify({ id: "{{post._id}}", password }) 
     }).then(res => res.json());
     
@@ -113,10 +133,7 @@
       return;
     }
     const data = await fetch("/delete", { 
-      method: 'DELETE', 
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      ...deleteOption,
       body: JSON.stringify({ id: "{{post._id}}", password }) 
     }).then(res => res.json());
     
@@ -130,4 +147,29 @@
     alert("삭제 성공. 리스트로 이동합니다.");
     document.location = "/";     
   }
+  
+  async function deleteComment(idx) {
+    console.log(idx);
+    const password = prompt("삭제하시려면 패스워드를 입력해주세요");
+    // 프롬프트에서 취소를 누른경우 처리 
+    if (!password) {
+      return;
+    }
+    
+    const {isSuccess} = await fetch("/delete-comment", {
+      ...deleteOption,
+      body: JSON.stringify({ id: "{{post._id}}", idx, password }) 
+    }).then(res => res.json());
+  
+    console.log(isSuccess);
+    if (!isSuccess) {
+      alert("삭제에 실패했습니다. 패스워드를 확인해주세요.");
+      return;
+    }
+    
+    alert("삭제성공!");
+    document.location.reload();    
+  }
+  
+  
 </script>

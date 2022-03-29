@@ -4,7 +4,7 @@ const { ObjectId } = require("mongodb");
 
 const app = express();
 const mongodbConnection = require("./configs/mongodb-connection");
-const { getPostById, getPostByIdAndPassword } = require("./services/post-service");
+const { getPostById, getPostByIdAndPassword, updatePost, projectionOption } = require("./services/post-service");
 
 const PER_PAGE = 10;
 
@@ -78,13 +78,7 @@ app.post("/modify/", async (req, res) => {
     createdDt: new Date().toISOString(),
   };
 
-  const updateDocument = {
-    $set: {
-      ...post,
-    },
-  };
-
-  const result = await collection.updateOne({ _id: ObjectId(id) }, updateDocument);
+  const result = updatePost(collection, id, post);
 
   res.redirect(`/detail/${id}`);
 });
@@ -132,4 +126,52 @@ app.get("/detail/:id", async (req, res) => {
     title: "테스트 게시판",
     post,
   });
+});
+
+// 코멘트 작성
+app.post("/write-comment", async (req, res) => {
+  const { id, name, password, comment } = req.body;
+  const post = await getPostById(collection, id);
+  if (post.comments) {
+    post.comments.push({
+      idx: post.comments.length + 1,
+      name,
+      password,
+      comment,
+      createdDt: new Date().toISOString(),
+    });
+  } else {
+    post.comments = [
+      {
+        idx: 1,
+        name,
+        password,
+        comment,
+        createdDt: new Date().toISOString(),
+      },
+    ];
+  }
+
+  // 업데이트 하기. 업데이트 후에는 상세페이지로 다시 리다이렉트
+  updatePost(collection, id, post);
+  return res.redirect(`/detail/${id}`);
+});
+
+// 코멘트 삭제
+app.delete("/delete-comment", async (req, res) => {
+  const { id, idx, password } = req.body;
+  const post = await collection.findOne(
+    {
+      _id: ObjectId(id),
+      comments: { $elemMatch: { idx: parseInt(idx), password } },
+    },
+    projectionOption,
+  );
+  if (!post) {
+    return res.json({ isSuccess: false });
+  }
+  // 코멘트 번호가 idx 이외인 것만 comments에 다시 할당 후 저장
+  post.comments = post.comments.filter((comment) => comment.idx != idx);
+  updatePost(collection, id, post);
+  return res.json({ isSuccess: true });
 });
