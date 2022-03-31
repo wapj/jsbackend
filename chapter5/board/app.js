@@ -9,11 +9,9 @@ const { getPostById, getPostByIdAndPassword, updatePost, projectionOption } = re
 const PER_PAGE = 10;
 
 let collection;
-mongodbConnection(function (err, mongoClient) {
+mongodbConnection((err, mongoClient) => {
   if (err) throw err;
-
-  const client = mongoClient;
-  collection = client.db().collection("post");
+  collection = mongoClient.db().collection("post");
   app.listen(3000);
   console.log("START!");
 });
