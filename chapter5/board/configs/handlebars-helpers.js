@@ -1,11 +1,5 @@
 module.exports = {
-  lengthOfList: function (list = []) {
-    return list.length;
-  },
-  eq: function (val1, val2) {
-    return val1 === val2;
-  },
-  dateString: function (isoString) {
-    return new Date(isoString).toLocaleDateString();
-  },
+  lengthOfList: (list = []) => list.length,
+  eq: (val1, val2) => val1 === val2,
+  dateString: (isoString) => new Date(isoString).toLocaleDateString(),
 };
