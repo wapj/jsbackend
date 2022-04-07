@@ -4,9 +4,13 @@ const { ObjectId } = require("mongodb");
 
 const app = express();
 const mongodbConnection = require("./configs/mongodb-connection");
-const { getPostById, getPostByIdAndPassword, updatePost, projectionOption } = require("./services/post-service");
-
-const PER_PAGE = 10;
+const {
+  writePost,
+  getPostById,
+  getPostByIdAndPassword,
+  updatePost,
+  projectionOption,
+} = require("./services/post-service");
 
 let collection;
 mongodbConnection((err, mongoClient) => {
@@ -35,6 +39,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // 리스트 페이지
 app.get("/", (req, res) => {
+  const PER_PAGE = 10;
   const page = parseInt(req.query.page) || 1;
   const search = req.query.search || "";
   const query = { title: new RegExp(search, "i") };
@@ -53,6 +58,13 @@ app.get("/", (req, res) => {
 // 쓰기 페이지 이동
 app.get("/write", (req, res) => {
   res.render("write", { title: "테스트 게시판", mode: "create" });
+});
+
+// 글쓰기
+app.post("/write", async (req, res) => {
+  const post = req.body;
+  const result = await writePost(collection, post);
+  res.redirect(`/detail/${result.insertedId}`);
 });
 
 // 수정 페이지로 이동
@@ -89,15 +101,6 @@ app.post("/check-password", async (req, res) => {
   } else {
     return res.json({ isExist: true });
   }
-});
-
-app.post("/write", async (req, res) => {
-  const post = req.body;
-  // 생성일시와 조회수를 넣어준다.
-  post.hits = 0;
-  post.createdDt = new Date().toISOString();
-  const result = await collection.insertOne(post);
-  res.redirect(`/detail/${result.insertedId}`);
 });
 
 app.delete("/delete", async (req, res) => {
