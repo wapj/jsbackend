@@ -7,6 +7,7 @@ const mongodbConnection = require("./configs/mongodb-connection");
 const {
   writePost,
   getPostById,
+  getDetailPost,
   getPostByIdAndPassword,
   updatePost,
   projectionOption,
@@ -122,10 +123,10 @@ app.delete("/delete", async (req, res) => {
 });
 
 app.get("/detail/:id", async (req, res) => {
-  const post = await getPostById(collection, req.params.id);
+  const result = await getDetailPost(collection, req.params.id);
   res.render("detail", {
     title: "테스트 게시판",
-    post,
+    post: result.value,
   });
 });
 

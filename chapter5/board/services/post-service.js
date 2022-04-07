@@ -35,8 +35,13 @@ async function writePost(collection, post) {
   return await collection.insertOne(post);
 }
 
+async function getDetailPost(collection, id) {
+  return await collection.findOneAndUpdate({ _id: ObjectId(id) }, { $inc: { hits: 1 } }, projectionOption);
+}
+
 module.exports = {
   writePost,
+  getDetailPost,
   getPostById,
   getPostByIdAndPassword,
   updatePost,
