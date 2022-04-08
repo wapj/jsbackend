@@ -31,37 +31,25 @@
   <div class="flex justify-center">
     <div class="btn-group">
       {{#with paginator}}
-        {{#if isFirstPage}}
-          <a class="btn btn-sm btn-disabled">&lt;&lt;</a>
-        {{else}}
-          <a class="btn btn-sm btn-outline" href="/?page=1&search={{@root.search}}">&lt;&lt;</a>
-        {{/if}}
-        
+        <a class="btn btn-sm btn-outline" href="/?page=1&search={{@root.search}}">&lt;&lt;</a>       
         {{#if hasPrev}}
           <a class="btn btn-sm btn-outline" href="/?page={{prevPage}}&search={{@root.search}}">&lt;</a>          
         {{else}}
           <a class="btn btn-sm btn-disabled">&lt;</a>
-        {{/if}}
-        
+        {{/if}}       
         {{#each pageList}}
           {{#if (eq . @root.paginator.page)}}
             <a class="btn btn-sm btn-outline btn-active">{{.}}</a>
           {{else}}
             <a class="btn btn-sm btn-outline" href="/?page={{.}}&search={{@root.search}}">{{.}}</a>
           {{/if}}
-        {{/each}} 
-        
+        {{/each}}         
         {{#if hasNext}}
           <a class="btn btn-sm btn-outline" href="/?page={{nextPage}}&search={{@root.search}}">&gt;</a>          
         {{else}}
           <a class="btn btn-sm btn-disabled">&gt;</a>
         {{/if}}
-             
-        {{#if isLastPage}}
-          <a class="btn btn-sm btn-disabled">&gt;&gt;</a>
-        {{else}}
-          <a class="btn btn-sm btn-outline" href="/?page={{lastPage}}&search={{@root.search}}">&gt;&gt;</a>
-        {{/if}}
+        <a class="btn btn-sm btn-outline" href="/?page={{lastPage}}&search={{@root.search}}">&gt;&gt;</a>
       {{/with}}
     </div>
   </div>
