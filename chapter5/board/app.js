@@ -56,6 +56,15 @@ app.post("/write", async (req, res) => {
   res.redirect(`/detail/${result.insertedId}`);
 });
 
+// 상세 페이지로 이동
+app.get("/detail/:id", async (req, res) => {
+  const result = await postService.getDetailPost(collection, req.params.id);
+  res.render("detail", {
+    title: "테스트 게시판",
+    post: result.value,
+  });
+});
+
 // 수정 페이지로 이동
 // app.get("/modify/:id", async (req, res) => {
 //   const { id } = req.params.id;
@@ -109,14 +118,6 @@ app.post("/write", async (req, res) => {
 //     return res.json({ isSuccess: false });
 //   }
 // });
-
-app.get("/detail/:id", async (req, res) => {
-  const result = await postService.getDetailPost(collection, req.params.id);
-  res.render("detail", {
-    title: "테스트 게시판",
-    post: result.value,
-  });
-});
 
 // // 코멘트 작성
 // app.post("/write-comment", async (req, res) => {

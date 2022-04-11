@@ -28,7 +28,7 @@
       </div>
 
       <div class="py-6">
-        <pre class="overflow-scroll p-3 border-2 border-gray-200 h-96">{{content}}</pre>
+        <pre class="overflow-scroll whitespace-pre-wrap p-3 border-2 border-gray-200 h-96">{{content}}</pre>
       </div>
     </main>
     <section>
@@ -91,7 +91,6 @@
 
 {{! prettier-ignore }}
 <script>
-  
   const deleteOption = {
     method: 'DELETE', 
     headers: {
@@ -126,7 +125,7 @@
     }
   }
   
-  async function deletePost() {     
+  async function deletePost() {
     const password = prompt("삭제하시려면 패스워드를 입력해주세요");
     // 프롬프트에서 취소를 누른경우 처리 
     if (!password) {

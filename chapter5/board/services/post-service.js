@@ -22,11 +22,6 @@ async function list(collection, page, search) {
   return [posts, paginatorObj];
 }
 
-// ----------------------------- 아직 구현 안한 녀석들
-async function getDetailPost(collection, id) {
-  return await collection.findOneAndUpdate({ _id: ObjectId(id) }, { $inc: { hits: 1 } }, projectionOption);
-}
-
 // 패스워드는 노출 할 필요가 없으므로 결과값으로 가져오지않음.
 const projectionOption = {
   projection: {
@@ -35,6 +30,12 @@ const projectionOption = {
     "comments.password": 0,
   },
 };
+
+async function getDetailPost(collection, id) {
+  return await collection.findOneAndUpdate({ _id: ObjectId(id) }, { $inc: { hits: 1 } }, projectionOption);
+}
+
+// ----------------------------- 아직 구현 안한 녀석들
 
 async function getPostById(collection, id) {
   return await collection.findOne({ _id: ObjectId(id) }, projectionOption);
