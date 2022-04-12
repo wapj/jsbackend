@@ -35,14 +35,12 @@ async function getDetailPost(collection, id) {
   return await collection.findOneAndUpdate({ _id: ObjectId(id) }, { $inc: { hits: 1 } }, projectionOption);
 }
 
-// ----------------------------- 아직 구현 안한 녀석들
+async function getPostByIdAndPassword(collection, { id, password }) {
+  return await collection.findOne({ _id: ObjectId(id), password: password }, projectionOption);
+}
 
 async function getPostById(collection, id) {
   return await collection.findOne({ _id: ObjectId(id) }, projectionOption);
-}
-
-async function getPostByIdAndPassword(collection, { id, password }) {
-  return await collection.findOne({ _id: ObjectId(id), password: password }, projectionOption);
 }
 
 async function updatePost(collection, id, post) {

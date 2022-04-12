@@ -111,14 +111,12 @@
     if (!password) {
       return;
     }
-    const data = await fetch("/check-password", { 
+    const result = await fetch("/check-password", { 
       ...postOption,
       body: JSON.stringify({ id: "{{post._id}}", password }) 
-    }).then(res => res.json());
-    
-    const {isExist} = data;
-    
-    if (isExist) {
+    })
+    const data = await result.json();
+    if (data.isExist) {
       document.location = "/modify/{{post._id}}"
     } else {
       alert("패스워드가 올바르지 않습니다.");
