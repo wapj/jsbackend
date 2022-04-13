@@ -129,14 +129,13 @@
     if (!password) {
       return;
     }
-    const data = await fetch("/delete", { 
+    const result = await fetch("/delete", { 
       ...deleteOption,
       body: JSON.stringify({ id: "{{post._id}}", password }) 
-    }).then(res => res.json());
+    });
     
-    const {isSuccess} = data;
-    
-    if (!isSuccess) {
+    const data = await result.json();
+    if (!data.isSuccess) {
       alert("삭제에 실패했습니다. 패스워드를 확인해주세요.");
       return;
     }

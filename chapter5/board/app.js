@@ -100,23 +100,21 @@ app.post("/modify/", async (req, res) => {
   res.redirect(`/detail/${id}`);
 });
 
-// app.delete("/delete", async (req, res) => {
-//   const { id, password } = req.body;
-//   // id로 삭제
-//   try {
-//     const result = await collection.deleteOne({ _id: ObjectId(id), password: password });
-//     if (result.deletedCount !== 1) {
-//       console.log("삭제실패");
-//       return res.json({ isSuccess: false });
-//     }
-
-//     // 삭제성공인 경우 리다이렉트
-//     return res.json({ isSuccess: true });
-//   } catch (error) {
-//     console.error(error);
-//     return res.json({ isSuccess: false });
-//   }
-// });
+app.delete("/delete", async (req, res) => {
+  const { id, password } = req.body;
+  // id로 삭제
+  try {
+    const result = await collection.deleteOne({ _id: ObjectId(id), password: password });
+    if (result.deletedCount !== 1) {
+      console.log("삭제실패");
+      return res.json({ isSuccess: false });
+    }
+    return res.json({ isSuccess: true });
+  } catch (error) {
+    console.error(error);
+    return res.json({ isSuccess: false });
+  }
+});
 
 // // 코멘트 작성
 // app.post("/write-comment", async (req, res) => {
