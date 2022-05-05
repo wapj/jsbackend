@@ -116,50 +116,52 @@ app.delete("/delete", async (req, res) => {
   }
 });
 
-// // 코멘트 작성
-// app.post("/write-comment", async (req, res) => {
-//   const { id, name, password, comment } = req.body;
-//   const post = await getPostById(collection, id);
-//   if (post.comments) {
-//     post.comments.push({
-//       idx: post.comments.length + 1,
-//       name,
-//       password,
-//       comment,
-//       createdDt: new Date().toISOString(),
-//     });
-//   } else {
-//     post.comments = [
-//       {
-//         idx: 1,
-//         name,
-//         password,
-//         comment,
-//         createdDt: new Date().toISOString(),
-//       },
-//     ];
-//   }
+// 댓글 추가
+app.post("/write-comment", async (req, res) => {
+  const { id, name, password, comment } = req.body;
+  const post = await postService.getPostById(collection, id);
+  if (post.comments) {
+    post.comments.push({
+      idx: post.comments.length + 1,
+      name,
+      password,
+      comment,
+      createdDt: new Date().toISOString(),
+    });
+  } else {
+    post.comments = [
+      {
+        idx: 1,
+        name,
+        password,
+        comment,
+        createdDt: new Date().toISOString(),
+      },
+    ];
+  }
 
-//   // 업데이트 하기. 업데이트 후에는 상세페이지로 다시 리다이렉트
-//   updatePost(collection, id, post);
-//   return res.redirect(`/detail/${id}`);
-// });
+  // 업데이트 하기. 업데이트 후에는 상세페이지로 다시 리다이렉트
+  postService.updatePost(collection, id, post);
+  return res.redirect(`/detail/${id}`);
+});
 
-// // 코멘트 삭제
-// app.delete("/delete-comment", async (req, res) => {
-//   const { id, idx, password } = req.body;
-//   const post = await collection.findOne(
-//     {
-//       _id: ObjectId(id),
-//       comments: { $elemMatch: { idx: parseInt(idx), password } },
-//     },
-//     projectionOption,
-//   );
-//   if (!post) {
-//     return res.json({ isSuccess: false });
-//   }
-//   // 코멘트 번호가 idx 이외인 것만 comments에 다시 할당 후 저장
-//   post.comments = post.comments.filter((comment) => comment.idx != idx);
-//   updatePost(collection, id, post);
-//   return res.json({ isSuccess: true });
-// });
+// 댓글 삭제
+app.delete("/delete-comment", async (req, res) => {
+  const { id, idx, password } = req.body;
+  // 게시글(post)의 comments안에 있는 특정 댓글 데이터를 찾기
+  const post = await collection.findOne(
+    {
+      _id: ObjectId(id),
+      comments: { $elemMatch: { idx: parseInt(idx), password } },
+    },
+    postService.projectionOption,
+  );
+  // 데이터가 없으면 isSuccess : false를 주면서 종료
+  if (!post) {
+    return res.json({ isSuccess: false });
+  }
+  // 코멘트 번호가 idx 이외인 것만 comments에 다시 할당 후 저장
+  post.comments = post.comments.filter((comment) => comment.idx != idx);
+  postService.updatePost(collection, id, post);
+  return res.json({ isSuccess: true });
+});
