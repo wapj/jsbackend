@@ -7,7 +7,7 @@ import { NestFactory } from "@nestjs/core/nest-factory";
 class AppController {
   @Get()
   getStart() {
-    return "안녕 NestJS";
+    return "hello nestjs";
   }
 }
 
@@ -22,4 +22,3 @@ async function bootstrap() {
 }
 
 bootstrap();
-
