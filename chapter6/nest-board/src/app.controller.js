@@ -1,5 +1,5 @@
-import { Controller, Dependencies, Get } from '@nestjs/common';
-import { AppService } from './app.service';
+import { Controller, Dependencies, Get, Redirect } from "@nestjs/common";
+import { AppService } from "./app.service";
 
 @Controller()
 @Dependencies(AppService)
@@ -9,6 +9,7 @@ export class AppController {
   }
 
   @Get()
+  @Redirect("/board", 301)
   getHello() {
     return this.appService.getHello();
   }

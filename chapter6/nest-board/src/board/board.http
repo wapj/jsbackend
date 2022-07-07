@@ -1,0 +1,30 @@
+@server = http://localhost:3000
+
+GET {{server}}
+
+### 
+GET {{server}}/board
+
+###
+POST {{server}}/board
+Content-Type: application/json
+
+{
+  "title": "안녕하세요", 
+  "message": "처음 인사드립니다."
+}
+
+###
+GET {{server}}/board/1234
+
+###
+DELETE  {{server}}/board/1234
+
+###
+PUT {{server}}/board/1234
+Content-Type: application/json
+
+{
+  "title": "안녕하세요~", 
+  "message": "수정합니다."
+}
