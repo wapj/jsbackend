@@ -30,7 +30,7 @@ export class BoardController {
 
   @Delete(":id")
   @Bind(Param("id"))
-  deleteOne(id) {
+  delete(id) {
     return `${id} 게시글 삭제`;
   }
 }
