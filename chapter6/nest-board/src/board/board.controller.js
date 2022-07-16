@@ -5,6 +5,7 @@ export class BoardController {
   @Get()
   @Bind(Query())
   findAll(query) {
+  findAll
     return "모든 게시물을 가져옴";
   }
 
