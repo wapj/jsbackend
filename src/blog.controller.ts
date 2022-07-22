@@ -1,5 +1,4 @@
 import { Controller, Delete, Get, Post, Put } from '@nestjs/common';
-import e from 'express';
 
 @Controller('blog')
 export class BlogController {

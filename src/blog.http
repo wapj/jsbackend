@@ -1,0 +1,30 @@
+@server = http://localhost:3000
+
+
+GET {{server}}/blog
+
+###
+POST {{server}}/blog
+Content-Type: application/json
+
+{
+  "title": "안녕하세요",
+  "content": "처음 인사드립니다."
+}
+
+###
+
+GET {{server}}/blog/123
+###
+
+DELETE {{server}}/blog/123
+
+###
+
+PUT {{server}}/blog/123
+Content-Type: application/json
+
+{
+  "title": "타이틀 수정",
+  "content": "본문수정"
+}
