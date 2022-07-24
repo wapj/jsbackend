@@ -1,3 +1,4 @@
+import { PostDto } from './blog.model';
 export class BlogService {
   posts = [];
 
