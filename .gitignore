@@ -5,6 +5,7 @@ dist/*
 /dist
 /node_modules
 
+chapter6/blog/dist 
 # Logs
 logs
 *.log
