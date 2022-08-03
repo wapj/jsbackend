@@ -15,14 +15,14 @@ Content-Type: application/json
 
 ###
 
-GET {{server}}/blog/1
+GET {{server}}/blog/62ea8d516274a141841ebf01
 ###
 
-DELETE {{server}}/blog/2
+DELETE {{server}}/blog/62ea8d756274a141841ebf0a
 
 ###
 
-PUT {{server}}/blog/3
+PUT {{server}}/blog/62ea8e8e33aa319b9b522641
 Content-Type: application/json
 
 {
