@@ -1,6 +1,8 @@
 const DB = [];
 
 function saveDB(user) {
+  // 실패 테스트시 다음의 주석 해제 
+  // const oldDBSize = DB.length + 1;
   const oldDBSize = DB.length;
   DB.push(user);
   console.log(`save ${user.name} to DB`);
@@ -27,7 +29,10 @@ function getResult(user) {
 }
 
 function registerByPromise(user) {
-  const result = saveDB(user).then(sendEmail).then(getResult);
+  const result = saveDB(user)
+                  .then(sendEmail)
+                  .then(getResult)
+                  .catch(error => new Error(error));
   // 아직 완료되지 않았으므로 pending 상태로 나옴
   console.log(result);
   return result;
