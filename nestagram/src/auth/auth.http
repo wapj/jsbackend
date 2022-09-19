@@ -1,0 +1,32 @@
+### 회원가입
+
+POST http://localhost:3000/auth/register
+content-type: application/json
+
+{
+    "email" : "andy8@podo.com",
+    "password" : "1234",
+    "username" : "andy"
+}
+
+### 로그인 
+POST http://localhost:3000/auth/login
+content-type: application/json
+
+{
+    "email" : "andy8@podo.com",
+    "password" : "1234"
+}
+
+### 로그인2 : LoginGuard
+POST http://localhost:3000/auth/login2
+content-type: application/json
+
+{
+    "email" : "andy8@podo.com",
+    "password" : "1234"
+}
+
+### Guard Test 
+GET http://localhost:3000/auth/test-guard
+

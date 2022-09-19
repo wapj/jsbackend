@@ -1,0 +1,25 @@
+### Create
+POST http://localhost:3000/user/create
+content-type: application/json
+
+{
+  "username": "andy",
+  "password": "test1234",
+  "email": "andy3@podo.com"
+}
+
+### GetUser
+GET http://localhost:3000/user/getUser/andy2@podo.com
+
+
+### Update User
+PUT http://localhost:3000/user/update/andy2@podo.com
+content-type: application/json
+
+{
+  "username": "andy2",
+  "password": "test12345"
+}
+
+### Delete User
+DELETE http://localhost:3000/user/delete/andy@podo.com
