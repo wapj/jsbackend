@@ -27,6 +27,7 @@ export class LoginGuard implements CanActivate {
       return false;
     }
     request.user = user;
+    console.dir(request);
 
     return true;
   }

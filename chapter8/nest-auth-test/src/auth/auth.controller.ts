@@ -31,8 +31,8 @@ export class AuthController {
     if (userInfo) {
       res.cookie('login', JSON.stringify(userInfo), {
         httpOnly: true,
-        // maxAge: 1000 * 60 * 60 * 24 * 7, // 1day
-        maxAge: 10000,
+        maxAge: 1000 * 60 * 60 * 24 * 7, // 1day
+        // maxAge: 10000,
       });
     }
     return res.send({ message: 'login success' });
