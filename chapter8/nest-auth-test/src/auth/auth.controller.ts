@@ -7,8 +7,8 @@ import {
   Response,
   UseGuards,
 } from '@nestjs/common';
-import { CreateUserDto, LoginUserDto } from 'src/user/user.dto';
-import { LoginGuard } from './auth.guard';
+import { CreateUserDto } from 'src/user/user.dto';
+import { AuthenticatedGuard, LocalAuthGuard, LoginGuard } from './auth.guard';
 import { AuthService } from './auth.service';
 
 @Controller('auth') // ❶ 컨트롤러이며 주소는 auth로 시작
@@ -55,5 +55,18 @@ export class AuthController {
   @Get('test-guard')
   testGuard() {
     return '로그인을 한 경우 보입니다.';
+  }
+
+  @UseGuards(LocalAuthGuard)
+  @Post('login3')
+  login3(@Request() req) {
+    console.log('login3');
+    return req.user;
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Get('test-guard2')
+  testGuardWithSession(@Request() req) {
+    return req.user;
   }
 }
