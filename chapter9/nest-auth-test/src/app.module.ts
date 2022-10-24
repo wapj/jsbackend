@@ -5,18 +5,20 @@ import { UserModule } from './user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './user/user.entity';
 import { AuthModule } from './auth/auth.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'sqlite',
-      database: 'nestagram.sqlite',
+      database: 'auth-test.sqlite',
       autoLoadEntities: true, // for data source
       synchronize: true,
       logging: true,
     }),
     UserModule,
     AuthModule,
+    ConfigModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -8,7 +8,12 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { CreateUserDto } from 'src/user/user.dto';
-import { AuthenticatedGuard, LocalAuthGuard, LoginGuard } from './auth.guard';
+import {
+  AuthenticatedGuard,
+  GoogleAuthGuard,
+  LocalAuthGuard,
+  LoginGuard,
+} from './auth.guard';
 import { AuthService } from './auth.service';
 
 @Controller('auth') // ❶ 컨트롤러이며 주소는 auth로 시작
@@ -68,5 +73,16 @@ export class AuthController {
   @Get('test-guard2')
   testGuardWithSession(@Request() req) {
     return req.user;
+  }
+
+  @Get('to-google')
+  @UseGuards(GoogleAuthGuard)
+  async googleAuth(@Request() req) {}
+
+  @Get('google')
+  @UseGuards(GoogleAuthGuard)
+  async googleAuthRedirect(@Request() req, @Response() res) {
+    const { user } = req;
+    res.redirect('http://localhost:3000/auth/test-guard2');
   }
 }
