@@ -83,6 +83,7 @@ export class AuthController {
   @UseGuards(GoogleAuthGuard)
   async googleAuthRedirect(@Request() req, @Response() res) {
     const { user } = req;
-    res.redirect('http://localhost:3000/auth/test-guard2');
+    // res.redirect('http://localhost:3000/auth/test-guard2');
+    return res.send(user);
   }
 }
