@@ -9,17 +9,18 @@ content-type: application/json
 }
 
 ### GetUser
-GET http://localhost:3000/user/getUser/andy2@podo.com
+GET http://localhost:3000/user/getUser/andy3@podo.com
 
 
 ### Update User
-PUT http://localhost:3000/user/update/andy2@podo.com
+PUT http://localhost:3000/user/update/andy3@podo.com
 content-type: application/json
 
 {
+  "email": "andy3@podo.com",
   "username": "andy2",
   "password": "test12345"
 }
 
 ### Delete User
-DELETE http://localhost:3000/user/delete/andy@podo.com
+DELETE http://localhost:3000/user/delete/andy3@podo.com

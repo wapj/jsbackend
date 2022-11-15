@@ -28,6 +28,7 @@ export class UserController {
 
   @Put('/update/:email')
   updateUser(@Param('email') email: string, @Body() user: CreateUserDto) {
+    console.log(email);
     console.log(user);
     return this.userService.updateUser(email, user);
   }
