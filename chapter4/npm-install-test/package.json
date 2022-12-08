@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "lodash": ">=4.17.0 < 4.20.0"
+  },
+  "devDependencies": {
+    "jest": "^29.3.1"
+  }
+}
