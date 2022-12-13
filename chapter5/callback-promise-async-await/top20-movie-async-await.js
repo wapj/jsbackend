@@ -1,7 +1,7 @@
 const axios = require("axios");
 
 async function getTop20Movies() {
-  const url = "https://movie.daum.net/api/contents/brunch?size=20";
+  const url = "https://raw.githubusercontent.com/wapj/musthavenodejs/main/movieinfo.json";
   try {
     const result = await axios.get(url);
     const { data } = result;

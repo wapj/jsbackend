@@ -1,5 +1,5 @@
 const axios = require("axios");
-const url = "https://movie.daum.net/api/contents/brunch?size=20";
+const url = "https://raw.githubusercontent.com/wapj/musthavenodejs/main/movieinfo.json";
 
 axios
   .get(url)
