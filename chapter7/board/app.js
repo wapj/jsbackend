@@ -19,7 +19,7 @@ app.engine(
   "handlebars",
   handlebars.create({
     helpers: require("./configs/handlebars-helpers"),
-  }).engine,
+  }).engine
 );
 app.set("view engine", "handlebars");
 app.set("views", __dirname + "/views");
@@ -104,7 +104,10 @@ app.delete("/delete", async (req, res) => {
   const { id, password } = req.body;
   // id로 삭제
   try {
-    const result = await collection.deleteOne({ _id: ObjectId(id), password: password });
+    const result = await collection.deleteOne({
+      _id: ObjectId(id),
+      password: password,
+    });
     if (result.deletedCount !== 1) {
       console.log("삭제실패");
       return res.json({ isSuccess: false });
@@ -154,7 +157,7 @@ app.delete("/delete-comment", async (req, res) => {
       _id: ObjectId(id),
       comments: { $elemMatch: { idx: parseInt(idx), password } },
     },
-    postService.projectionOption,
+    postService.projectionOption
   );
   // 데이터가 없으면 isSuccess : false를 주면서 종료
   if (!post) {
