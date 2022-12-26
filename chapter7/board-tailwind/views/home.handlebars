@@ -1,15 +1,12 @@
-<h1>{{title}}</h1> <!-- ❶ 타이틀 영역 -->
+<h1>{{title}}</h1>
 
-<!-- ❷ 검색어 영역  -->
 <input type="text" name="search" id="search" value="{{search}}" size="50" placeholder="검색어를 입력하세요." />
-<button onclick="location.href=`/?search=${document.getElementById('search').value}`">검색</button>
+<button class="btn btn-sm" onclick="location.href=`/?search=${document.getElementById('search').value}`">검색</button>
+
+<br />
+<a href="/write" class="btn btn-sm btn-primary"> 글쓰기</a>
 <br />
 
-<!-- ❸ 글쓰기 페이지 이동 링크  -->
-<a href="/write"> 글쓰기</a>
-<br />
-
-<!-- ❹ 리스트 테이블  -->
 <div>
   <table>
     <thead>
@@ -24,16 +21,16 @@
       {{#each posts}}
       <tr>
         <td><a href="/detail/{{_id}}">{{title}}</a></td>
-        <td>{{writer}}</td>
-        <td>{{hits}}</td>
-        <td>{{dateString createdDt}}</td>
+        <td align="center">{{writer}}</td>
+        <td align="center">{{hits}}</td>
+        <td align="center">{{dateString createdDt}}</td>
       </tr>
       {{/each}}
     </tbody>
   </table>
 </div>
 
-<!-- ❺ 페이징 영역  -->
+
 <div>
   {{#with paginator}}
   <a href="/?page=1&search={{@root.search}}">&lt;&lt;</a>
@@ -44,7 +41,7 @@
   {{/if}}
   {{#each pageList}}
   {{#if (eq . @root.paginator.page)}}
-  <a>{{.}}</a>
+  <a class="btn btn-sm btn-outline btn-active">{{.}}</a>
   {{else}}
   <a href="/?page={{.}}&search={{@root.search}}">{{.}}</a>
   {{/if}}
