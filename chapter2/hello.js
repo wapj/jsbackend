@@ -4,7 +4,7 @@ let count = 0;
 
 // 노드 서버 객체 생성
 const server = http.createServer((req, res) => {
-  console.log((count += 1)); // ❷
+  log(count);
   res.statusCode = 200; // ❸
   res.setHeader("Content-Type", "text/plain"); // ➍
   res.write("hello\n"); // ➎
@@ -14,4 +14,8 @@ const server = http.createServer((req, res) => {
   }, 2000);
 });
 
-server.listen(8000); // ➐ 접속 대기
+function log(count) {
+  console.log((count += 1)); // ❷
+}
+
+server.listen(8000, () => console.log("Hello Node.js")); // ➐ 접속 대기

@@ -16,31 +16,31 @@
 </body>
 
 <script>
-const ws = new WebSocket('ws://localhost:3000');
-function sendMessage() {
-  ws.send(document.getElementById('message').value);
-}
+  const ws = new WebSocket("ws://localhost:3000");
+  function sendMessage() {
+    ws.send(document.getElementById("message").value);
+  }
 
-function webSocketClose() {
-  console.log("종료누름");
-  ws.close(1000, "정상종료"); 
-}
+  function webSocketClose() {
+    console.log("종료누름");
+    ws.close(1000, "정상종료");
+  }
 
-ws.onopen = function() {
-  console.log("클라이언트 접속 완료!");
-};
+  ws.onopen = function () {
+    console.log("클라이언트 접속 완료!");
+  };
 
-// message received - show the message in div#messages
-ws.onmessage = function(event) {
-  let message = event.data.replace(/(\r\n|\n|\r)/g,"<br />");
-  let el = document.createElement('div');
-  el.innerHTML = message;
-  el.className = 'message';
-  document.getElementById('messages').append(el);
-}
+  // message received - show the message in div#messages
+  ws.onmessage = function (event) {
+    let message = event.data.replace(/(\r\n|\n|\r)/g, "<br />");
+    let el = document.createElement("div");
+    el.innerHTML = message;
+    el.className = "message";
+    document.getElementById("messages").append(el);
+  };
 
-ws.onclose = function(e) {
-  console.log('종료');
-  document.getElementById('messages').append("서버접속종료");
-}
+  ws.onclose = function (e) {
+    console.log("종료");
+    document.getElementById("messages").append("서버 접속 종료");
+  };
 </script>
