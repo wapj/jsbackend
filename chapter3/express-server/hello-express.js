@@ -5,7 +5,7 @@ const port = 3000;
 // prettier-ignore
 app.get("/", (req, res) => { // ❸ 
   res.set({ "Content-Type": "text/html; charset=utf-8" }); // ➍
-  res.end("헬로 express");
+  res.end("헬로 Express");
 });
 
 // prettier-ignore
