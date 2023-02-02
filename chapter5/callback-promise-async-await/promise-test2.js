@@ -1,8 +1,6 @@
 const DB = [];
 
 function saveDB(user) {
-  // 실패 테스트시 다음의 주석 해제 
-  // const oldDBSize = DB.length + 1;
   const oldDBSize = DB.length;
 
   DB.push(user);
@@ -41,8 +39,7 @@ function registerByPromise(user) {
 
 const myUser = { email: "andy@test.com", password: "1234", name: "andy" };
 
-const result = registerByPromise(myUser);
-result.then(console.log);
 
-// allResult = Promise.all([saveDB(myUser), sendEmail(myUser), getResult(myUser)]);
-// allResult.then(console.log);
+allResult = Promise.all([saveDB(myUser), sendEmail(myUser), getResult(myUser)]);
+allResult.then(console.log);
+
