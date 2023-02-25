@@ -6,7 +6,7 @@ http
     res.setHeader("Content-Type", "text/html; charset=utf-8");
 
     if (path === "/user") {
-      res.end("[user] name : 승규, age: 30"); // ❸
+      res.end("[user] name : andy, age: 30"); // ❸
     } else if (path === "/feed") {
       res.end(`<meta charset="UTF-8"><ul>
             <li>picture1</li>
