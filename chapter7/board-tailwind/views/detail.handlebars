@@ -1,86 +1,119 @@
-<h1>{{title}}</h1>
-{{#with post}}
-<h2 class="text-xl">{{title}}</h2>
-<div>
-  작성자 : <b>{{writer}}</b>
-</div>
-<div>
-  조회수 : {{hits}} | 작성일시 : {{dateString createdDt}}
-  <button onclick="modifyPost()">수정</button>
-  <button onclick="deletePost()">삭제</button>
-</div>
-
-<div>
-  <pre>{{content}}</pre>
-</div>
-
-<section>
-  <div>
-    <h3>{{lengthOfList comments}}개의 댓글이 있습니다.</h3>
-  </div>
-
-  <form method="post" action="/write-comment">
-    <input type="hidden" name="id" value="{{_id}}" />
-    <div>
-      <div>
-        <input type="text" name="name" placeholder="이름" />
-        <input type="password" name="password" placeholder="비밀번호" />
+<div class="container mx-auto p-5 w-9/12">
+  <header class="bg-white shadow">
+    <div class="p-4 mb-5">
+      <h1 class="text-3xl font-bold text-gray-700">{{title}}</h1>
+    </div>
+  </header>
+  {{#with post}}
+    <main>
+      <div class="border-b-2 mb-5">
+        <h3 class="text-xl">{{title}}</h3>
       </div>
-      <div>
-        <textarea cols="40" rows="3" name="comment" placeholder="댓글을 입력해주세요."></textarea>
-        <br /><br /><button class="btn btn-sm btn-primary">댓글 쓰기</button>
+      <div class="flex">
+        <div class="flex-auto">
+          작성자 :
+          <b>{{writer}}</b>
+
+        </div>
+        <div class="flex-row-reverse">
+          조회수 :
+          {{hits}}
+
+          | 작성일시 :
+          {{dateString createdDt}}
+
+          <button class="btn btn-xs btn-primary" onclick="modifyPost()">수정</button>
+          <button class="btn btn-xs btn-warning" onclick="deletePost()">삭제</button>
+        </div>
       </div>
-    </div>
-  </form>
-</section>
 
-<section>
-  {{#each comments}}
-  <div>
-    <div>
-      작성자 : <b>{{name}}</b>
-    </div>
-    <div>
-      작성일시 : {{dateString createdDt}}
-      <button onclick="deleteComment('{{idx}}')">삭제</button>
-    </div>
-  </div>
-  <div>
-    <pre>{{comment}}</pre>
-  </div>
-  {{/each}}
-</section>
-{{/with}}
+      <div class="py-6">
+        <pre class="overflow-scroll whitespace-pre-wrap p-3 border-2 border-gray-200 h-96">{{content}}</pre>
+      </div>
+    </main>
+    <section>
+      <div class="border-2 p-2 mb-5">
+        <h3 class="text-xl">{{lengthOfList comments}}개의 댓글이 있습니다.</h3>
+      </div>
 
-<footer>
-  <div> <a href="/">목록으로</a> </div>
-</footer>
+      <form method="post" action="/write-comment">
+        <input type="hidden" name="id" value="{{_id}}" />
+        <div class="mb-10">
+          <div class="mb-5">
+            <input type="text" name="name" class="input input-sm input-bordered" placeholder="이름" />
+            <input type="password" name="password" class="input input-sm input-bordered" placeholder="비밀번호" />
+          </div>
+          <div class="space-y-3">
+            <textarea
+              class="textarea textarea-bordered w-full"
+              rows="3"
+              name="comment"
+              placeholder="댓글을 입력해주세요."
+            ></textarea>
+            <button class="btn btn-sm btn-primary">댓글쓰기</button>
+          </div>
+        </div>
+      </form>
+    </section>
+
+    <section>
+      <div class="comments space-y-2">
+        {{#each comments}}
+          <div class="border-b-2 pb-1">
+            <div class="flex">
+              <div class="flex-auto">
+                작성자 :
+                <b>{{name}}</b>
+
+              </div>
+              <div class="flex-row-reverse">
+                작성일시 :
+                {{dateString createdDt}}
+
+                <button class="btn btn-xs btn-warning" onclick="deleteComment('{{idx}}')">삭제</button>
+              </div>
+            </div>
+          </div>
+          <div>
+            <pre>{{comment}}</pre>
+          </div>
+        {{/each}}
+      </div>
+    </section>
+  {{/with}}
+
+  <footer>
+    <div class="mt-10">
+      <a class="btn btn-block" href="/">목록으로</a>
+    </div>
+  </footer>
+</div>
 
 {{! prettier-ignore }}
 <script>
   const deleteOption = {
-    method: 'DELETE',
+    method: 'DELETE', 
     headers: {
       'Content-Type': 'application/json',
     },
   }
-
+  
   const postOption = {
-    method: 'POST',
+    method: 'POST', 
     headers: {
       'Content-Type': 'application/json',
     },
   }
-
-  async function modifyPost() {
-    const password = prompt("패스워드를 입력해주세요");
+  
+  async function modifyPost() { 
+    const password = prompt("패스워드를 입력해주세요"); 
     // 프롬프트에서 취소를 누른경우 처리 
     if (!password) {
       return;
     }
-    const result = await fetch("/check-password", {
+    const result = await fetch("/check-password", { 
       ...postOption,
-      body: JSON.stringify({ id: "{{post._id}}", password })
+      body: JSON.stringify({ id: "{{post._id}}", password }) 
     })
     const data = await result.json();
     if (data.isExist) {
@@ -89,48 +122,50 @@
       alert("패스워드가 올바르지 않습니다.");
     }
   }
-
+  
   async function deletePost() {
     const password = prompt("삭제하시려면 패스워드를 입력해주세요");
     // 프롬프트에서 취소를 누른경우 처리 
     if (!password) {
       return;
     }
-    const result = await fetch("/delete", {
+    const result = await fetch("/delete", { 
       ...deleteOption,
-      body: JSON.stringify({ id: "{{post._id}}", password })
+      body: JSON.stringify({ id: "{{post._id}}", password }) 
     });
-
+    
     const data = await result.json();
     if (!data.isSuccess) {
       alert("삭제에 실패했습니다. 패스워드를 확인해주세요.");
       return;
     }
-
+    
     alert("삭제 성공. 리스트로 이동합니다.");
-    document.location = "/";
+    document.location = "/";     
   }
-
+  
   async function deleteComment(idx) {
     const password = prompt("삭제하시려면 패스워드를 입력해주세요");
     // 프롬프트에서 취소를 누른경우 처리 
     if (!password) {
       return;
     }
-
+    
     const result = await fetch("/delete-comment", {
       ...deleteOption,
-      body: JSON.stringify({ id: "{{post._id}}", idx, password })
+      body: JSON.stringify({ id: "{{post._id}}", idx, password }) 
     });
-
+    
     const data = await result.json();
-
+    
     if (!data.isSuccess) {
       alert("삭제에 실패했습니다. 패스워드를 확인해주세요.");
       return;
     }
-
+    
     alert("삭제성공!");
-    document.location.reload();
+    document.location.reload();    
   }
+  
+  
 </script>
