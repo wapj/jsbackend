@@ -5,14 +5,14 @@ import * as bcrypt from 'bcrypt';
 
 @Injectable() // ❶ 프로바이더로 사용
 export class AuthService {
-  constructor(private userSerivice: UserService) {} // ❷ 생성자에서 UserService를 주입받음
+  constructor(private userSerivice: UserService) {} // ❷ 생성자에서 UserService를 주입 받음.
 
+  // ❸ 함수내부에 await 구문이 있으므로 async가 필요
   async register(userDto: CreateUserDto) {
-    // ❸ 메서드 내부에 await 구문이 있으므로 async 필요
-    // ❹ 이미 가입된 유저가 있는지 체크
+    // ❹ 이미가입된 유저가 있는지 체크
     const user = await this.userSerivice.getUser(userDto.email);
     if (user) {
-      // ❺ 이미 가입된 유저가 있다면 에러 발생
+      // ❺ 기가입된 유저가 있다면 에러발생
       throw new HttpException(
         '해당 유저가 이미 있습니다.',
         HttpStatus.BAD_REQUEST,
@@ -22,30 +22,30 @@ export class AuthService {
     // ❻ 패드워드 암호화
     const encryptedPassword = bcrypt.hashSync(userDto.password, 10);
 
-    // 데이터베이스에 저장. 저장 중 에러가 나면 서버 에러 발생
+    // ❼ 디비에 저장. 저장중 에러가 나면 서버에러 발생
     try {
       const user = await this.userSerivice.createUser({
         ...userDto,
         password: encryptedPassword,
       });
-      // ❼ 회원 가입 후 반환하는 값에는 password를 주지 않음
+      // ❽회원가입 후 반환하는 값에는 password를 주지 않음
       user.password = undefined;
       return user;
     } catch (error) {
-      throw new HttpException('서버 에러', 500);
+      throw new HttpException('서버에러', 500);
     }
   }
 
   async validateUser(email: string, password: string) {
-    const user = await this.userSerivice.getUser(email); // ❶ 이메일로 유저 정보를 받아옴
+    const user = await this.userSerivice.getUser(email);
 
     if (!user) {
-      // ❷ 유저가 없으면 검증 실패
       return null;
     }
-    const { password: hashedPassword, ...userInfo } = user; // ❸ 패스워드를 따로 뽑아냄
+
+    const { password: hashedPassword, ...userInfo } = user;
+
     if (bcrypt.compareSync(password, hashedPassword)) {
-      // ❹ 패스워드가 일치하면 성공
       return userInfo;
     }
     return null;

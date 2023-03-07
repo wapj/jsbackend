@@ -1,4 +1,4 @@
-### 회원 가입
+### 회원가입
 
 POST http://localhost:3000/auth/register
 content-type: application/json
@@ -14,23 +14,23 @@ POST http://localhost:3000/auth/login
 content-type: application/json
 
 {
-    "email" : "andy1@podo.com",
+    "email" : "andy8@podo.com",
     "password" : "1234"
 }
 
-### 로그인 2 : LoginGuard
+### 로그인2 : LoginGuard
 POST http://localhost:3000/auth/login2
 content-type: application/json
 
 {
-    "email" : "andy1@podo.com",
+    "email" : "andy8@podo.com",
     "password" : "1234"
 }
 
-### Guard 테스트
-GET http://localhost:3000/auth/test-guard
+### Guard Test 
+GET  http://localhost:3000/auth/test-guard
 
-### 로그인 3 :  ❶ 세션을 사용하는 테스트 
+### 로그인3 : With Session
 POST http://localhost:3000/auth/login3
 content-type: application/json
 
@@ -39,7 +39,8 @@ content-type: application/json
     "password" : "1234"
 }
 
-### 로그인 3 :  ❷ 틀린 패스워드로 테스트 
+
+### 로그인3 : 틀린 패스워드 
 POST http://localhost:3000/auth/login3
 content-type: application/json
 
@@ -48,5 +49,7 @@ content-type: application/json
     "password" : "12345"
 }
 
-### ❸ 인증이 성공 하는지 테스트
+
+### 인증됐는지 테스트 
 GET http://localhost:3000/auth/test-guard2
+
