@@ -1,0 +1,67 @@
+1장
+백엔드 개발, 개발, 배포, QA, 유지보수
+아키텍처, 계층형 아키텍처, 이벤트 기반 아키텍처, 마이크로서비스 아키텍처
+데이터베이스, 트랜잭션, 무결성, ACID, 캐시, NoSQL
+인프라, 클라우드, 빌드, 네트워크
+자바스크립트, npm, 리액트, NestJS
+
+2장 
+Node.js, 자바스크립트 런타임, 싱글 스레드, 이벤트 기반 아키텍처
+V8엔진, 컴파일러, 인터프리터, 이그니션, 터보팬, JIT컴파일러
+libuv, 이벤트 루프, 스레드 풀 
+
+3장
+Express, 웹 프레임워크, 라우팅, 미들웨어
+REST API, HTTP 메서드, HTTP 헤더
+
+4장
+패키지 매니저, npm, npx, 패키지 스코프, 시맨틱 버전
+의존성 트리, 패키지잠금, 유령 의존성
+yarn, PnP, 제로 인스톨
+
+5장
+비동기 처리, 콜백
+프로미스, 이행, 거절, 연기
+어싱크 어웨이트, 가독성
+
+6장
+데이터베이스, RDB, NoSQL, 키-밸류, 컬럼, 그래프
+몽고디비, 도큐먼트, 컬렉션, 클러스터, 샤드, BSON, 아틀라스, 콤파스, 몽구스
+
+7장
+게시판, 글쓰기, 글수정, 글삭제
+리스트, 페이지네이션, 필터
+상세 페이지, 프로젝션, 조회수
+템플릿 엔진, 핸들바, 렌더링, 커스텀 헬퍼 함수 
+서버 기동, 재시작, nodemon
+
+8장
+NestJS, 프레임워크, 의존성 주입, 데코레이터
+웹 API, 모듈, 컨트롤러, 프로바이더, Rest 클라이언트
+타입스크립트, 인터페이스
+몽고디비, 리포지터리, 스키마, DTO
+
+9장
+환경 설정, dotenv, YAML, 확장 변수, 커스텀 환경 설정, NODE_ENV 
+서버 기동, bootstrap, 초기화 및 환경 변수 병합, ConfigModule, ConfigSerivce
+
+10장
+회원 가입, bcrypt
+인증, 인가, 쿠키, 토큰, 세션, JWT
+유효성 검증, 파이프, ValidationPipe, class-validator, 가드
+패스포트, 스트래티지, 세션 시리얼라이저, 믹스인 
+데이터베이스, SQLite, TypeORM, 엔티티, 리포지터리, 서비스
+
+11장 
+OAuth, 액세스 토큰, 리프레시 토큰, providerId
+패스포트, GoogleStrategy, GoogleAuthGuard, 리다이렉트
+
+12장
+파일 업로드, multipart/form-data, US-ASCII, Content-Disposition
+multer, storage, 인터셉터, FileInterceptor
+정적 파일 서비스, serve-static, ServeStaticModule, NestExpressApplication
+
+13장
+실시간 웹 애플리케이션, 폴링, 롱폴링, 웹소켓
+socket.io, 채팅방, 브로드캐스팅, 네임스페이스
+게이트웨이, @WebSocketGateway
