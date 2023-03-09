@@ -57,9 +57,9 @@ OAuth, 액세스 토큰, 리프레시 토큰, providerId
 패스포트, GoogleStrategy, GoogleAuthGuard, 리다이렉트
 
 12장
-파일 업로드, multipart/form-data, US-ASCII, Content-Disposition
-multer, storage, 인터셉터, FileInterceptor
-정적 파일 서비스, serve-static, ServeStaticModule, NestExpressApplication
+파일 업로드, 멀티파트, 컨텐트 디스포지션
+멀터, 스토리지, 인터셉터, 파일 인터셉터
+정적 파일 서비스, 서버 스태틱 모듈, NestExpressApplication
 
 13장
 실시간 웹 애플리케이션, 폴링, 롱폴링, 웹소켓
