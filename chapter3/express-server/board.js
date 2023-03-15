@@ -22,9 +22,9 @@ app.post("/posts", (req, res) => {
 
 app.delete("/posts/:id", (req, res) => {
   const id = req.params.id;
-  const filteredBoard = posts.filter((post) => post.id !== +id);
-  const isLengthChanged = posts.length !== filteredBoard.length;
-  posts = filteredBoard;
+  const filteredPosts = posts.filter((post) => post.id !== +id);
+  const isLengthChanged = posts.length !== filteredPosts.length;
+  posts = filteredPosts;
   if (isLengthChanged) {
     res.json("OK");
     return;
