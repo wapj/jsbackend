@@ -1,4 +1,4 @@
-const calc = require("sample-project");
+const calc = require("sample-package");
 
 const a = 17;
 const b = 3;
