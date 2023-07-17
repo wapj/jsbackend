@@ -15,6 +15,6 @@ export class User {
   @Column()
   username: string;
 
-  @Column({ default: true }) // ❺ 기본값을 넣어줌
+  @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP"}) // ❺ 기본값을 넣어줌
   createdDt: Date = new Date();
 }
