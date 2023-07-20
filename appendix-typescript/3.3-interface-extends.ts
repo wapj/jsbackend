@@ -10,7 +10,7 @@ interface Episode extends WebtoonCommon {
 }
 
 interface Series extends WebtoonCommon {
-  sereisNumber: number;
+  seriesNumber: number;
   author: string;
 }
 
@@ -26,6 +26,6 @@ const series: Series = {
   title: "나 혼자도 레벨업",
   createdDate: new Date(),
   updatedDate: new Date(),
-  sereisNumber: 123,
+  seriesNumber: 123,
   author: "천재작가",
 };
