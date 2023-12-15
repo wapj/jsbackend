@@ -1,4 +1,5 @@
 export async function resolve(specifier, context, defaultResolve) {
+
   // 여기에서 사용자 정의 해석 로직을 구현
   if (specifier.endsWith('.andy')) {
     return {
