@@ -5,7 +5,26 @@ let malformedString = "\ud800"; // 잘못 형성된 유니코드 문자열
 console.log(malformedString.isWellFormed()); // false
 // �로 변경됨
 // �는 원래의 데이터가 손상되었거나 유니코드로 변환될 수 없는 문자를 대체하는 데 사용됨
-console.log(malformedString.toWellFormed()); 
+
+console.log(malformedString.toWellFormed());
+
+
+// Array 버퍼의 사이즈를 동적으로 변경가능
+const buffer = new ArrayBuffer(4, { maxByteLength: 10 });
+if (buffer.resizable) {
+    console.log("The Buffer can be resized!");
+    buffer.resize(8); // resize the buffer
+}
+console.log(`New Buffer Size: ${buffer.byteLength}`);
+
+// SharedArrayBuffer는 grow 메서드를 사용하여 동적으로 변경가능
+const shredBuffer = new SharedArrayBuffer(4, { maxByteLength: 10 });
+
+if (shredBuffer.growable) {
+    console.log("The SharedArrayBuffer can grow!");
+    shredBuffer.grow(8); // 이름은 grow인데 줄일수 있군?!
+}
+console.log(`New Shared Buffer Size: ${shredBuffer.byteLength}`);
 
 
 // Methods that change Array and TypedArray by copy
