@@ -1,16 +1,4 @@
-export async function resolve(specifier, context, defaultResolve) {
-
-  // 여기에서 사용자 정의 해석 로직을 구현
-  if (specifier.endsWith('.andy')) {
-    return {
-      url: `andy:${specifier}`,
-      shortCircuit: true
-    };
-  }
-
-  return defaultResolve(specifier, context);
-}
-
+// andy.mjs 
 export async function load(url, context, defaultLoad) {
   console.log('load >> ', url);
   if (url.startsWith('andy:')) {
@@ -25,7 +13,5 @@ export async function load(url, context, defaultLoad) {
       shortCircuit: true
     };
   }
-
-  // 기본 로드 로직에 위임
   return defaultLoad(url, context);
 }

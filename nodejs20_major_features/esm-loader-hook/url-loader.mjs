@@ -1,4 +1,4 @@
-// custom-loader.mjs
+// url-loader.mjs
 export async function load(url, context, nextLoad) {
   if (url.startsWith("https://")) {
     const response = await fetch(url, { redirect: "follow" });
