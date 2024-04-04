@@ -7,8 +7,8 @@ Bun은 번들러, 테스트 실행기 및 Node.js 호환 패키지 관리자를 
 즉 Node.js에서 고민했던 부분을 많이 해소해준 자바스크립트/타입스크립트 런타임
 
 
-조만간 window 버전인 bundow가 나온다고함. 
-https://twitter.com/bunjavascript/status/1773040914715259270
+1.1에서 window를 지원함
+https://bun.sh/docs/installation#windows
 
 
 ## bun 설치 
