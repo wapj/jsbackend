@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>NestJS 북마크</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    form {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    input[type="text"],
+    input[type="url"] {
+      padding: 10px;
+      margin-right: 10px;
+      border: none;
+      border-radius: 4px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #28b8f5;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    li {
+      background-color: white;
+      padding: 15px;
+      margin-bottom: 10px;
+      border-radius: 4px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    li a {
+      color: #333;
+      text-decoration: none;
+      margin-right: 10px;
+    }
+
+    li button {
+      background-color: #f44336;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>간단 북마크 앱</h1>
+  <form id="bookmark-form">
+    <input type="text" id="title" placeholder="Title" required>
+    <input type="url" id="url" placeholder="URL" required>
+    <button type="submit">북마크 추가</button>
+  </form>
+  <ul id="bookmark-list"></ul>
+
+  <script>
+    const form = document.getElementById('bookmark-form');
+    const bookmarkList = document.getElementById('bookmark-list');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const title = document.getElementById('title').value;
+      const url = document.getElementById('url').value;
+
+      const response = await fetch('/bookmarks', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ title, url }),
+      });
+
+      if (response.ok) {
+        fetchBookmarks();
+        form.reset();
+      }
+    });
+
+    async function fetchBookmarks() {
+      const response = await fetch('/bookmarks/all');
+      const bookmarks = await response.json();
+
+      bookmarkList.innerHTML = '';
+      bookmarks.forEach((bookmark) => {        
+        const li = document.createElement('li');
+        const titleLink = document.createElement('a');
+        titleLink.href = bookmark.url;
+        titleLink.target = '_blank';
+        titleLink.textContent = bookmark.title;
+        
+        const shortUrlLink = document.createElement('a');
+        shortUrlLink.href = `/${bookmark.shortUrl}`;
+        shortUrlLink.target = '_blank';
+        shortUrlLink.textContent = `Short URL: ${window.location.origin}/${bookmark.shortUrl}`;
+
+        const editButton = document.createElement('button');
+        editButton.textContent = 'Edit';
+        editButton.addEventListener('click', () => {
+          const newTitle = prompt('Enter new title', bookmark.title);
+          const newUrl = prompt('Enter new URL', bookmark.url);
+          if (newTitle && newUrl) {
+            updateBookmark(bookmark.id, { title: newTitle, url: newUrl });
+          }
+        });
+
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = 'Delete';
+        deleteButton.addEventListener('click', () => {
+          if (confirm('Are you sure you want to delete this bookmark?')) {
+            deleteBookmark(bookmark.id);
+          }
+        });
+
+        li.appendChild(titleLink);
+        li.appendChild(shortUrlLink);
+        li.appendChild(editButton);
+        li.appendChild(deleteButton);
+        bookmarkList.appendChild(li);
+      });
+    }
+
+    async function updateBookmark(id, updates) {
+      const response = await fetch(`/bookmarks/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updates),
+      });
+
+      if (response.ok) {
+        fetchBookmarks();
+      }
+    }
+
+    async function deleteBookmark(id) {
+      const response = await fetch(`/bookmarks/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        fetchBookmarks();
+      }
+    }
+
+    fetchBookmarks();
+  </script>
+</body>
+</html>
