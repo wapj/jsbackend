@@ -133,7 +133,7 @@
         const deleteButton = document.createElement('button');
         deleteButton.textContent = 'Delete';
         deleteButton.addEventListener('click', () => {
-          if (confirm('Are you sure you want to delete this bookmark?')) {
+          if (confirm('해당 북마크를 삭제하시겠습니까?')) {
             deleteBookmark(bookmark.id);
           }
         });
