@@ -46,6 +46,11 @@ export class RoomGateway {
   @WebSocketServer()
   server: Server;
 
+  @SubscribeMessage('getRooms')
+  getRooms(@ConnectedSocket() socket: Socket) {
+    this.server.emit('rooms', this.rooms);
+  }
+
   @SubscribeMessage('createRoom')
   handleMessage(@MessageBody() data, @ConnectedSocket() socket: Socket) {
     const { nickname, room } = data;

@@ -18,6 +18,7 @@ function sendMessage() {
 socket.on('connect', (socket) =>{
   console.log('Connected to server');
   console.log(socket);
+  roomSocket.emit('getRooms');
 });
 
 socket.on('message', (data) => {
