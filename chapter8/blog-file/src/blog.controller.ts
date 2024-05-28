@@ -15,8 +15,13 @@ export class BlogController {
   constructor(private blogService: BlogService) {}
 
   @Get()
-  getAllPosts() {
+ getAllPosts() {    
     return this.blogService.getAllPosts();
+  }
+
+  @Get("/test-async")
+  testAaync() {
+    return new Promise((resolve) => setTimeout(() => {resolve("3초 후에 출력 됩니다.");}, 3000));    
   }
 
   @Post()
