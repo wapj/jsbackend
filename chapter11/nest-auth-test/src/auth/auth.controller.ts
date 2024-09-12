@@ -36,7 +36,7 @@ export class AuthController {
     if (userInfo) {
       res.cookie('login', JSON.stringify(userInfo), {
         httpOnly: true,
-        maxAge: 1000 * 60 * 60 * 24 * 7, // 1day
+        maxAge: 1000 * 60 * 60 * 24 * 7, // 7day
         // maxAge: 10000,
       });
     }
@@ -50,7 +50,7 @@ export class AuthController {
       // 응답에 쿠키정보 추가
       res.cookie('login', JSON.stringify(req.user), {
         httpOnly: true,
-        maxAge: 1000 * 60 * 60 * 24 * 7, // 1day
+        maxAge: 1000 * 60 * 60 * 24 * 7, // 7day
       });
     }
     return res.send({ message: 'login2 success' });
