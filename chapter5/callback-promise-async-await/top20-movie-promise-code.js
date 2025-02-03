@@ -15,7 +15,7 @@ axios
     throw new Error("데이터 없습니다.");
   })
   .then((data) => {
-    if (!data.articleList || data.articleList.size == 0) {
+    if (!data.articleList || data.articleList.length == 0) {
       throw new Error("데이터가 없습니다.");
     }
     return data.articleList;
