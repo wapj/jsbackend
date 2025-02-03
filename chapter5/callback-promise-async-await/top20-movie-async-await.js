@@ -5,7 +5,7 @@ async function getTop20Movies() {
   try {
     const result = await axios.get(url);
     const { data } = result;
-    if (!data.articleList || data.articleList.size == 0) {
+    if (!data.articleList || data.articleList.length == 0) {
       throw new Error("데이터가 없습니다.");
     }
 
