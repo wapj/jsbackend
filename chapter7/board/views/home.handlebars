@@ -43,7 +43,7 @@
   <a>&lt;</a>
   {{/if}}
   {{#each pageList}}
-  {{#if (eq . @root.paginator.page)}}
+  {{#if (eq this @root.paginator.page)}}
   <a>{{.}}</a>
   {{else}}
   <a href="/?page={{.}}&search={{@root.search}}">{{.}}</a>

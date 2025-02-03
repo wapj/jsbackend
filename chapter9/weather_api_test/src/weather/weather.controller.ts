@@ -12,10 +12,10 @@ export class WeatherController {
       const apiKey = this.configService.get('WEATHER_API_KEY');
   
       // 날씨 API 호출
-      return await this.callWheatherApi(apiUrl, apiKey);
+      return await this.callWeatherApi(apiUrl, apiKey);
     }
   
-    async callWheatherApi(apiUrl: string, apiKey: string): Promise<string> {
+    async callWeatherApi(apiUrl: string, apiKey: string): Promise<string> {
       console.log('날씨 정보 가져오는 중...');
       console.log(apiUrl);
       const url = `${apiUrl}${apiKey}`;
