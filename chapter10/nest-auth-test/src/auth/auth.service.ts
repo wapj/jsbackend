@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { CreateUserDto } from '../user/user.dto';
-import { UserService } from '../user/user.service';
+import { CreateUserDto } from 'src/user/user.dto';
+import { UserService } from 'src/user/user.service';
 import * as bcrypt from 'bcrypt';
 
 @Injectable() // ❶ 프로바이더로 사용

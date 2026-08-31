@@ -1,5 +1,6 @@
 const { MongoClient } = require("mongodb");
-const uri = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/board";
+const uri = "mongodb+srv://<user>:<pass>@<atlas-host>/board";
+// const uri = "mongodb://localhost:27017";
 
 module.exports = function (callback) {
   return MongoClient.connect(uri, callback);

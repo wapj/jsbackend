@@ -1,7 +1,7 @@
 const MongoClient = require('mongodb').MongoClient;
 
-// Set MONGODB_URI to use MongoDB Atlas instead of the local database.
-const url = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/test';
+// Replace <password> with your MongoDB Atlas password, and <clusterinfo> with the information about your cluster
+const url = 'mongodb+srv://mymongo:test1234@cluster0.c4xru.mongodb.net/test?retryWrites=true&w=majority';
 
 // Create a new MongoClient
 const client = new MongoClient(url, { useNewUrlParser: true });
