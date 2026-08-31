@@ -3,6 +3,10 @@
     "module": "CommonJS",
     "target": "ESNext",
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
-  }
+    "emitDecoratorMetadata": true,
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "skipLibCheck": true
+  },
+  "include": ["src/**/*.ts"]
 }

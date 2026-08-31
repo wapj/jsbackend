@@ -15,7 +15,7 @@ export interface BlogRepository {
 
 @Injectable()
 export class BlogFileRepository implements BlogRepository {
-  FILE_NAME = './src/blog.data.json';
+  FILE_NAME = process.env.BLOG_DATA_FILE || './src/blog.data.json';
 
   async getAllPost(): Promise<PostDto[]> {
     const datas = await readFile(this.FILE_NAME, 'utf8');
@@ -66,7 +66,7 @@ export class BlogMongoRepository implements BlogRepository {
       createdDt: new Date(),
       updatedDt: new Date(),
     };
-    this.blogModel.create(createPost);
+    await this.blogModel.create(createPost);
   }
 
   async getPost(id: string): Promise<PostDto> {

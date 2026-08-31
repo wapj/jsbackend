@@ -21,6 +21,7 @@ interface Clock {
  *
  */
 
+// @ts-expect-error merged Clock requires brand and price.
 const wrongClock: Clock = {
   time: new Date(),
 };

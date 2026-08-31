@@ -1,0 +1,42 @@
+name: Chapter E2E
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Use Node.js 24.20.0
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .node-version
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            **/package-lock.json
+
+      - name: Install E2E dependencies
+        run: |
+          npm ci
+          npm run install:e2e
+
+      - name: Run chapter E2E tests
+        run: |
+          npm run verify:node24
+          JSBACKEND_E2E_SKIP_BUILD=1 npm run test:e2e
+
+      - name: Audit root E2E dependencies
+        run: npm audit --audit-level=high

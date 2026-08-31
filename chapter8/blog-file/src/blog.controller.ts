@@ -20,9 +20,9 @@ export class BlogController {
   }
 
   @Post()
-  createPost(@Body() postDto) {
+  async createPost(@Body() postDto) {
     console.log("게시글 작성");
-    this.blogService.createPost(postDto);
+    await this.blogService.createPost(postDto);
     return "success";
   }
 
@@ -35,14 +35,14 @@ export class BlogController {
   }
 
   @Delete("/:id")
-  deletePost(@Param("id") id: string) {
+  async deletePost(@Param("id") id: string) {
     console.log("게시글 삭제");
-    this.blogService.delete(id);
+    await this.blogService.delete(id);
   }
 
   @Put("/:id")
-  updatePost(@Param("id") id, @Body() postDto) {
+  async updatePost(@Param("id") id, @Body() postDto) {
     console.log(`[${id}] 게시글 업데이트`, id, postDto);
-    return this.blogService.updatePost(id, postDto);
+    return await this.blogService.updatePost(id, postDto);
   }
 }

@@ -2,39 +2,53 @@ import {
   Body,
   Controller,
   Get,
-  Post,
   Param,
   Put,
   Delete,
+  ForbiddenException,
+  NotFoundException,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
-import { CreateUserDto, UpdateUserDto } from './user.dto';
+import { UpdateUserDto } from './user.dto';
 import { UserService } from './user.service';
+import { AuthenticatedGuard } from 'src/auth/auth.guard';
 
 @Controller('user')
 export class UserController {
   constructor(private userService: UserService) {}
 
-  @Post('/create')
-  createUser(@Body() user: CreateUserDto) {
-    return this.userService.createUser(user);
+  private assertOwnAccount(request, email: string) {
+    if (request.user?.email !== email) {
+      throw new ForbiddenException('다른 사용자의 정보는 변경할 수 없습니다.');
+    }
   }
 
   @Get('/getUser/:email')
-  async getUser(@Param('email') email: string) {
+  @UseGuards(AuthenticatedGuard)
+  async getUser(@Request() request, @Param('email') email: string) {
+    this.assertOwnAccount(request, email);
     const user = await this.userService.getUser(email);
-    console.log(user);
-    return user;
+    if (!user) throw new NotFoundException('사용자를 찾을 수 없습니다.');
+    const { password, ...userInfo } = user;
+    return userInfo;
   }
 
   @Put('/update/:email')
-  updateUser(@Param('email') email: string, @Body() user: CreateUserDto) {
-    console.log(email);
-    console.log(user);
+  @UseGuards(AuthenticatedGuard)
+  updateUser(
+    @Request() request,
+    @Param('email') email: string,
+    @Body() user: UpdateUserDto,
+  ) {
+    this.assertOwnAccount(request, email);
     return this.userService.updateUser(email, user);
   }
 
   @Delete('/delete/:email')
-  deleteUser(@Param('email') email: string) {
+  @UseGuards(AuthenticatedGuard)
+  deleteUser(@Request() request, @Param('email') email: string) {
+    this.assertOwnAccount(request, email);
     return this.userService.deleteUser(email);
   }
 }

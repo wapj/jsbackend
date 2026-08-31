@@ -7,10 +7,18 @@ const mongodbConnection = require("./configs/mongodb-connection");
 const postService = require("./services/post-service");
 
 let collection;
-app.listen(3000, async () => {
-  console.log("Server started");
+async function startServer() {
   const mongoClient = await mongodbConnection();
   collection = mongoClient.db().collection("post");
+  app.listen(3000, () => {
+    console.log("Server started");
+    console.log("MongoDB connected");
+  });
+}
+
+startServer().catch((error) => {
+  console.error("Failed to start server", error);
+  process.exitCode = 1;
 });
 
 //   console.log("START!");
@@ -70,7 +78,10 @@ app.get("/detail/:id", async (req, res) => {
 // 패스워드 체크
 app.post("/check-password", async (req, res) => {
   const { id, password } = req.body;
-  const post = postService.getPostByIdAndPassword(collection, { id, password });
+  const post = await postService.getPostByIdAndPassword(collection, {
+    id,
+    password,
+  });
   if (!post) {
     return res.status(404).json({ isExist: false });
   } else {

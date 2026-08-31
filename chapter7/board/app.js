@@ -55,7 +55,10 @@ app.post("/check-password", async (req, res) => {
   const { id, password } = req.body;
 
   // postService의 getPostByIdAndPassword() 함수를 사용해 게시글 데이터 확인
-  const post = postService.getPostByIdAndPassword(collection, { id, password });
+  const post = await postService.getPostByIdAndPassword(collection, {
+    id,
+    password,
+  });
 
   // 데이터가 있으면 isExist true, 없으면 isExist false
   if (!post) {
@@ -168,9 +171,16 @@ app.delete("/delete-comment", async (req, res) => {
 });
 
 let collection;
-app.listen(3000, async () => {
-  console.log("Server started");
+async function startServer() {
   const mongoClient = await mongodbConnection();
   collection = mongoClient.db().collection("post");
-  console.log("MongoDB connected");
+  app.listen(3000, () => {
+    console.log("Server started");
+    console.log("MongoDB connected");
+  });
+}
+
+startServer().catch((error) => {
+  console.error("Failed to start server", error);
+  process.exitCode = 1;
 });
