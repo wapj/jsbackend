@@ -21,9 +21,9 @@ export class SessionSerializer extends PassportSerializer {
     done: (err: Error, payload: any) => void,
   ): Promise<any> {
     const user = await this.userSerivice.getUser(payload);
-    // ❺ 유저 정보가 없는 경우 done() 함수에 에러 전달
+    // ❺ 유저 정보가 없는 경우 만료된 세션으로 처리
     if (!user) {
-      done(new Error('No User'), null);
+      done(null, false);
       return;
     }
     const { password, ...userInfo } = user;

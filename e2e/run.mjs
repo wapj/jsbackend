@@ -1,17 +1,20 @@
 import { spawn } from "node:child_process";
 import { once } from "node:events";
-import { readdir } from "node:fs/promises";
 import net from "node:net";
 import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
+import { E2E_TARGETS, REQUIRED_NODE_VERSION } from "./support/repository.mjs";
 
-const REQUIRED_NODE_VERSION = "v24.20.0";
 const rootDir = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
   ".."
 );
 let mongoContainer;
+let receivedSignal;
+let signalCleanup;
+const activeChildren = new Map();
+const signalHandlers = new Map();
 
 if (process.version !== REQUIRED_NODE_VERSION) {
   throw new Error(
@@ -21,13 +24,92 @@ if (process.version !== REQUIRED_NODE_VERSION) {
   );
 }
 
+function trackChild(child, processGroup = false) {
+  const tracked = { pid: child.pid, processGroup };
+  activeChildren.set(child, tracked);
+  const removeIfStopped = () => {
+    if (!processTargetExists(child, tracked)) activeChildren.delete(child);
+  };
+  child.once("error", removeIfStopped);
+  child.once("exit", removeIfStopped);
+  return child;
+}
+
+function processTargetExists(child, tracked) {
+  if (!tracked.pid) return false;
+  if (process.platform === "win32" || !tracked.processGroup) {
+    return child.exitCode === null && child.signalCode === null;
+  }
+  try {
+    process.kill(-tracked.pid, 0);
+    return true;
+  } catch (error) {
+    if (error.code === "ESRCH") return false;
+    if (error.code === "EPERM") return true;
+    throw error;
+  }
+}
+
+function terminateChild(child, tracked, signal = "SIGTERM") {
+  if (!tracked.pid) return;
+  try {
+    if (process.platform === "win32" || !tracked.processGroup) {
+      if (child.exitCode === null && child.signalCode === null) {
+        child.kill(signal);
+      }
+    } else process.kill(-tracked.pid, signal);
+  } catch (error) {
+    if (error.code !== "ESRCH") throw error;
+  }
+}
+
+async function waitForActiveChildren(timeoutMs) {
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    for (const [child, tracked] of activeChildren) {
+      if (!processTargetExists(child, tracked)) activeChildren.delete(child);
+    }
+    if (activeChildren.size === 0) return true;
+    await new Promise((resolve) => setTimeout(resolve, 25));
+  }
+  return false;
+}
+
+async function stopActiveChildren(signal) {
+  for (const [child, tracked] of activeChildren) {
+    terminateChild(child, tracked, signal);
+  }
+  if (await waitForActiveChildren(8_000)) return;
+
+  for (const [child, tracked] of activeChildren) {
+    terminateChild(child, tracked, "SIGKILL");
+  }
+  if (!(await waitForActiveChildren(3_000))) {
+    process.stderr.write("Could not stop every E2E child process\n");
+  }
+}
+
+function handleSignal(signal) {
+  if (receivedSignal) return;
+  receivedSignal = signal;
+  signalCleanup = stopActiveChildren(signal);
+}
+
+for (const signal of ["SIGINT", "SIGTERM"]) {
+  const handler = () => handleSignal(signal);
+  signalHandlers.set(signal, handler);
+  process.on(signal, handler);
+}
+
 function run(command, args, options = {}) {
   return new Promise((resolve, reject) => {
-    const child = spawn(command, args, {
-      cwd: rootDir,
-      env: process.env,
-      stdio: options.stdio ?? ["ignore", "pipe", "pipe"],
-    });
+    const child = trackChild(
+      spawn(command, args, {
+        cwd: rootDir,
+        env: process.env,
+        stdio: options.stdio ?? ["ignore", "pipe", "pipe"],
+      })
+    );
     let output = "";
 
     child.stdout?.on("data", (chunk) => {
@@ -56,6 +138,10 @@ function waitForPort(port, timeoutMs = 60_000) {
 
   return new Promise((resolve, reject) => {
     const attempt = () => {
+      if (receivedSignal) {
+        reject(new Error(`Interrupted by ${receivedSignal}`));
+        return;
+      }
       const socket = net.createConnection({ host: "127.0.0.1", port });
       socket.once("connect", () => {
         socket.destroy();
@@ -108,6 +194,7 @@ async function startMongo() {
     "mongo:7",
     "--quiet",
   ]);
+  if (receivedSignal) throw new Error(`Interrupted by ${receivedSignal}`);
 
   const binding = await run("docker", ["port", mongoContainer, "27017/tcp"]);
   const port = Number(binding.match(/:(\d+)$/)?.[1]);
@@ -132,44 +219,71 @@ async function stopMongo() {
 
 async function main() {
   const mongoUri = await startMongo();
+  if (receivedSignal) throw new Error(`Interrupted by ${receivedSignal}`);
   process.env.JSBACKEND_E2E_MONGODB_URI = mongoUri;
 
-  const requestedChapters = new Set(
-    process.argv.slice(2).map((name) => name.replace(/\.test\.mjs$/, ""))
+  const requestedTargets = new Set(
+    process.argv
+      .slice(2)
+      .map((name) => path.basename(name).replace(/\.test\.mjs$/, ""))
   );
-  const testFiles = (await readdir(path.join(rootDir, "e2e")))
-    .filter((name) => /^chapter\d+\.test\.mjs$/.test(name))
-    .filter(
-      (name) =>
-        requestedChapters.size === 0 ||
-        requestedChapters.has(name.replace(/\.test\.mjs$/, ""))
-    )
-    .sort((left, right) =>
-      left.localeCompare(right, undefined, { numeric: true })
-    )
-    .map((name) => path.join("e2e", name));
+  const knownTargets = new Set(E2E_TARGETS.map(({ name }) => name));
+  const unknownTargets = [...requestedTargets].filter(
+    (name) => !knownTargets.has(name)
+  );
+  if (unknownTargets.length > 0) {
+    throw new Error(`Unknown E2E targets: ${unknownTargets.join(", ")}`);
+  }
+  const testFiles = E2E_TARGETS.filter(
+    ({ name }) => requestedTargets.size === 0 || requestedTargets.has(name)
+  ).map(({ file }) => file);
 
   if (testFiles.length === 0) {
     throw new Error("No matching chapter E2E tests were found");
   }
+  if (receivedSignal) throw new Error(`Interrupted by ${receivedSignal}`);
 
-  const child = spawn(
-    process.execPath,
-    ["--test", "--test-concurrency=1", "--test-reporter=spec", ...testFiles],
-    {
-      cwd: rootDir,
-      env: process.env,
-      stdio: "inherit",
-    }
+  const processGroup = process.platform !== "win32";
+  const child = trackChild(
+    spawn(
+      process.execPath,
+      [
+        "--test",
+        "--test-concurrency=1",
+        "--test-reporter=spec",
+        "--test-timeout=600000",
+        ...testFiles,
+      ],
+      {
+        cwd: rootDir,
+        detached: processGroup,
+        env: process.env,
+        stdio: "inherit",
+      }
+    ),
+    processGroup
   );
   const [code, signal] = await once(child, "exit");
-  if (code !== 0) {
+  if (code !== 0 && !receivedSignal) {
     throw new Error(`Chapter E2E tests failed (${signal ?? code})`);
   }
 }
 
+let failure;
 try {
   await main();
+} catch (error) {
+  failure = error;
 } finally {
   await stopMongo();
+  if (signalCleanup) await signalCleanup;
+}
+
+if (receivedSignal) {
+  for (const [signal, handler] of signalHandlers) {
+    process.off(signal, handler);
+  }
+  process.kill(process.pid, receivedSignal);
+} else if (failure) {
+  throw failure;
 }

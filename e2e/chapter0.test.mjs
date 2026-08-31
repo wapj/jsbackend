@@ -1,9 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { chapterPath, startNode, waitForOutput } from "./support/process.mjs";
+import { REQUIRED_NODE_VERSION } from "./support/repository.mjs";
 
 test("chapter0: the first HTTP server responds end to end", async (t) => {
-  assert.equal(process.version, "v24.20.0");
+  assert.equal(process.version, REQUIRED_NODE_VERSION);
   const server = startNode("hello-node.js", [], {
     cwd: chapterPath("chapter0"),
   });

@@ -6,10 +6,12 @@
   },
   "scripts": {
     "install:e2e": "node e2e/install.mjs",
+    "verify:node24": "node e2e/verify.mjs",
     "test:e2e": "node e2e/run.mjs"
   },
   "devDependencies": {
-    "socket.io-client": "4.5.3",
-    "ws": "8.11.0"
+    "postject": "1.0.0-alpha.6",
+    "socket.io-client": "4.8.3",
+    "ws": "8.21.0"
   }
 }

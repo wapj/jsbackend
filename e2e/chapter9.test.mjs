@@ -5,6 +5,7 @@ import test from "node:test";
 import {
   buildNest,
   chapterPath,
+  runNpm,
   startNode,
   waitForHttp,
 } from "./support/process.mjs";
@@ -24,6 +25,9 @@ async function startWeatherFixture() {
 
 test("chapter9: layered config and the weather API integration work", async (t) => {
   const configCwd = chapterPath("chapter9", "config-test");
+  await runNpm(["run", "test:e2e", "--", "--runInBand"], {
+    cwd: configCwd,
+  });
   await buildNest(configCwd);
   const configServer = startNode("dist/main.js", [], {
     cwd: configCwd,
@@ -36,7 +40,7 @@ test("chapter9: layered config and the weather API integration work", async (t) 
     },
   });
   t.after(() => configServer.stop());
-  await waitForHttp("http://127.0.0.1:3000/");
+  await waitForHttp(configServer, "http://127.0.0.1:3000/");
   assert.equal(
     await (await fetch("http://127.0.0.1:3000/")).text(),
     "chapter9-e2e-message"
@@ -64,7 +68,7 @@ test("chapter9: layered config and the weather API integration work", async (t) 
     },
   });
   t.after(() => weatherServer.stop());
-  await waitForHttp("http://127.0.0.1:3000/");
+  await waitForHttp(weatherServer, "http://127.0.0.1:3000/");
   const weatherResponse = await fetch("http://127.0.0.1:3000/weather");
   assert.equal(weatherResponse.status, 200);
   assert.equal(await weatherResponse.text(), "Rain and Clear");

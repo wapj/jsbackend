@@ -9,36 +9,24 @@ on:
 jobs:
   e2e:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
+    permissions:
+      contents: read
 
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Use Node.js 24.20.0
         uses: actions/setup-node@v4
         with:
-          node-version: 24.20.0
+          node-version-file: .node-version
           cache: npm
           cache-dependency-path: |
             package-lock.json
-            chapter6/test-mongoose/package-lock.json
-            chapter6/try-mongo/package-lock.json
-            chapter7/board/package-lock.json
-            chapter7/board-tailwind/package-lock.json
-            chapter8/blog-file/package-lock.json
-            chapter8/blog-memory/package-lock.json
-            chapter8/blog-mongodb/package-lock.json
-            chapter8/hello-nestjs/package-lock.json
-            chapter8/hello-nestjs-javascript/package-lock.json
-            chapter9/config-test/package-lock.json
-            chapter9/weather_api_test/package-lock.json
-            chapter10/nest-auth-test/package-lock.json
-            chapter11/nest-auth-test/package-lock.json
-            chapter12/nest-file-upload/package-lock.json
-            chapter13/echo-websocket/package-lock.json
-            chapter13/nest-chat/package-lock.json
-            chapter13/simple-nest-chat/package-lock.json
+            **/package-lock.json
 
       - name: Install E2E dependencies
         run: |
@@ -46,4 +34,9 @@ jobs:
           npm run install:e2e
 
       - name: Run chapter E2E tests
-        run: npm run test:e2e
+        run: |
+          npm run verify:node24
+          JSBACKEND_E2E_SKIP_BUILD=1 npm run test:e2e
+
+      - name: Audit root E2E dependencies
+        run: npm audit --audit-level=high

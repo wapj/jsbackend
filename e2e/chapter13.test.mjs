@@ -1,7 +1,8 @@
 import assert from "node:assert/strict";
+import { once } from "node:events";
 import test from "node:test";
 import { io } from "socket.io-client";
-import WebSocket from "ws";
+import WebSocket, { WebSocketServer } from "ws";
 import {
   buildNest,
   chapterPath,
@@ -34,6 +35,36 @@ function onceSocket(socket, event, timeoutMs = 10_000) {
   });
 }
 
+function onceWebSocketMessage(socket, timeoutMs = 10_000) {
+  return new Promise((resolve, reject) => {
+    const timeout = setTimeout(() => {
+      cleanup();
+      reject(new Error("Timed out waiting for a WebSocket message"));
+    }, timeoutMs);
+    const onMessage = (message) => {
+      cleanup();
+      resolve(message.toString());
+    };
+    const onError = (error) => {
+      cleanup();
+      reject(error);
+    };
+    const onClose = (code) => {
+      cleanup();
+      reject(new Error(`WebSocket closed before a message (${code})`));
+    };
+    const cleanup = () => {
+      clearTimeout(timeout);
+      socket.off("message", onMessage);
+      socket.off("error", onError);
+      socket.off("close", onClose);
+    };
+    socket.once("message", onMessage);
+    socket.once("error", onError);
+    socket.once("close", onClose);
+  });
+}
+
 function connectSocket(namespace = "") {
   return io(`http://127.0.0.1:3000${namespace}`, {
     forceNew: true,
@@ -42,23 +73,34 @@ function connectSocket(namespace = "") {
   });
 }
 
+test("chapter13: a silent raw WebSocket fails within its deadline", async (t) => {
+  const silentServer = new WebSocketServer({ host: "127.0.0.1", port: 0 });
+  await once(silentServer, "listening");
+  const { port } = silentServer.address();
+  const client = new WebSocket(`ws://127.0.0.1:${port}`);
+  await once(client, "open");
+  t.after(
+    () =>
+      new Promise((resolve) => {
+        client.terminate();
+        silentServer.close(resolve);
+      })
+  );
+
+  await assert.rejects(onceWebSocketMessage(client, 100), /Timed out/);
+});
+
 test("chapter13: raw WebSocket and both Socket.IO chat apps exchange messages", async (t) => {
   const echo = startNode("server.js", [], {
     cwd: chapterPath("chapter13", "echo-websocket"),
   });
   t.after(() => echo.stop());
-  await waitForPort(3000);
+  await waitForPort(echo, 3000);
   const rawClient = new WebSocket("ws://127.0.0.1:3000");
   t.after(() => rawClient.close());
-  const greeting = await new Promise((resolve, reject) => {
-    rawClient.once("message", (message) => resolve(message.toString()));
-    rawClient.once("error", reject);
-  });
+  const greeting = await onceWebSocketMessage(rawClient);
   assert.match(greeting, /서버 접속 완료/);
-  const echoed = new Promise((resolve, reject) => {
-    rawClient.once("message", (message) => resolve(message.toString()));
-    rawClient.once("error", reject);
-  });
+  const echoed = onceWebSocketMessage(rawClient);
   rawClient.send("chapter13-e2e");
   assert.match(await echoed, /chapter13-e2e/);
   rawClient.close();
@@ -68,7 +110,7 @@ test("chapter13: raw WebSocket and both Socket.IO chat apps exchange messages", 
   await buildNest(simpleCwd);
   const simple = startNode("dist/main.js", [], { cwd: simpleCwd });
   t.after(() => simple.stop());
-  await waitForHttp("http://127.0.0.1:3000/");
+  await waitForHttp(simple, "http://127.0.0.1:3000/");
   const simpleSender = connectSocket();
   const simpleReceiver = connectSocket();
   t.after(() => {
@@ -90,7 +132,7 @@ test("chapter13: raw WebSocket and both Socket.IO chat apps exchange messages", 
   await buildNest(chatCwd);
   const chat = startNode("dist/main.js", [], { cwd: chatCwd });
   t.after(() => chat.stop());
-  await waitForHttp("http://127.0.0.1:3000/");
+  await waitForHttp(chat, "http://127.0.0.1:3000/");
 
   const chatSender = connectSocket("/chat");
   const chatReceiver = connectSocket("/chat");

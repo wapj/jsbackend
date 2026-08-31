@@ -13,6 +13,10 @@ export const ROOT_DIR = path.resolve(
   "../.."
 );
 
+const activeProcesses = new Set();
+const signalHandlers = new Map();
+let handlingSignal = false;
+
 const npmCli =
   process.env.npm_execpath ??
   path.join(
@@ -21,7 +25,12 @@ const npmCli =
   );
 
 function mergedEnv(env = {}) {
-  return { ...process.env, ...env };
+  const merged = { ...process.env };
+  for (const [name, value] of Object.entries(env)) {
+    if (value === undefined) delete merged[name];
+    else merged[name] = value;
+  }
+  return merged;
 }
 
 function appendOutput(state, chunk) {
@@ -32,13 +41,93 @@ function appendOutput(state, chunk) {
 }
 
 function terminate(child, signal = "SIGTERM") {
-  if (!child.pid || child.exitCode !== null) return;
+  if (!child.pid) return;
   try {
-    if (process.platform === "win32") child.kill(signal);
-    else process.kill(-child.pid, signal);
+    if (process.platform === "win32") {
+      if (child.exitCode === null && child.signalCode === null) {
+        child.kill(signal);
+      }
+    } else process.kill(-child.pid, signal);
   } catch (error) {
     if (error.code !== "ESRCH") throw error;
   }
+}
+
+function processTargetExists(child) {
+  if (!child.pid) return false;
+  if (process.platform === "win32") {
+    return child.exitCode === null && child.signalCode === null;
+  }
+  try {
+    process.kill(-child.pid, 0);
+    return true;
+  } catch (error) {
+    if (error.code === "ESRCH") return false;
+    if (error.code === "EPERM") return true;
+    throw error;
+  }
+}
+
+async function waitForProcessTargetExit(child, timeoutMs) {
+  const deadline = Date.now() + timeoutMs;
+  while (processTargetExists(child) && Date.now() < deadline) {
+    await new Promise((resolve) => setTimeout(resolve, 25));
+  }
+  return !processTargetExists(child);
+}
+
+function processExitedError(server, description) {
+  return new Error(
+    `Process exited before ${description} (${
+      server.child.signalCode ?? server.child.exitCode ?? "unknown"
+    })\n${server.output}`
+  );
+}
+
+function assertProcessRunning(server, description) {
+  if (server.hasExited) throw processExitedError(server, description);
+}
+
+async function assertProcessRemainsRunning(
+  server,
+  description,
+  durationMs = 100
+) {
+  const stillRunning = Symbol("still-running");
+  let timeout;
+  try {
+    const result = await Promise.race([
+      server.exited,
+      new Promise((resolve) => {
+        timeout = setTimeout(() => resolve(stillRunning), durationMs);
+      }),
+    ]);
+    if (result !== stillRunning) {
+      throw processExitedError(server, description);
+    }
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+async function stopActiveProcesses() {
+  await Promise.allSettled([...activeProcesses].map((server) => server.stop()));
+}
+
+async function handleSignal(signal) {
+  if (handlingSignal) return;
+  handlingSignal = true;
+  await stopActiveProcesses();
+  process.off(signal, signalHandlers.get(signal));
+  process.kill(process.pid, signal);
+}
+
+for (const signal of ["SIGINT", "SIGTERM"]) {
+  const handler = () => {
+    void handleSignal(signal);
+  };
+  signalHandlers.set(signal, handler);
+  process.on(signal, handler);
 }
 
 export function startProcess(command, args = [], options = {}) {
@@ -57,7 +146,9 @@ export function startProcess(command, args = [], options = {}) {
     signal,
   }));
 
-  return {
+  const stopTimeoutMs = options.stopTimeoutMs ?? 3_000;
+  let stopping;
+  const server = {
     child,
     get output() {
       return state.output;
@@ -66,16 +157,38 @@ export function startProcess(command, args = [], options = {}) {
       return child.exitCode !== null || child.signalCode !== null;
     },
     async stop() {
-      if (child.exitCode === null && child.signalCode === null) {
-        terminate(child);
-        const forced = setTimeout(() => terminate(child, "SIGKILL"), 3_000);
-        forced.unref();
-        await exited;
-        clearTimeout(forced);
-      }
+      if (stopping) return stopping;
+      stopping = (async () => {
+        try {
+          if (!processTargetExists(child)) return;
+          terminate(child);
+          if (!(await waitForProcessTargetExit(child, stopTimeoutMs))) {
+            terminate(child, "SIGKILL");
+            if (!(await waitForProcessTargetExit(child, 3_000))) {
+              throw new Error(
+                `Could not stop process group ${child.pid}\n${server.output}`
+              );
+            }
+          }
+          if (!server.hasExited) await exited;
+        } finally {
+          activeProcesses.delete(server);
+        }
+      })();
+      return stopping;
     },
     exited,
   };
+  activeProcesses.add(server);
+  exited.then(
+    () => {
+      if (!processTargetExists(child)) activeProcesses.delete(server);
+    },
+    () => {
+      if (!processTargetExists(child)) activeProcesses.delete(server);
+    }
+  );
+  return server;
 }
 
 export async function runProcess(command, args = [], options = {}) {
@@ -86,8 +199,14 @@ export async function runProcess(command, args = [], options = {}) {
     timeoutMs
   );
   timeout.unref();
-  const { code, signal } = await server.exited;
-  clearTimeout(timeout);
+  let result;
+  try {
+    result = await server.exited;
+  } finally {
+    clearTimeout(timeout);
+    await server.stop();
+  }
+  const { code, signal } = result;
 
   if (code !== 0) {
     throw new Error(
@@ -123,6 +242,7 @@ export function runNpm(args, options = {}) {
 }
 
 export async function buildNest(cwd) {
+  if (process.env.JSBACKEND_E2E_SKIP_BUILD === "1") return;
   await runNpm(["run", "build"], { cwd, timeoutMs: 120_000 });
 }
 
@@ -158,10 +278,11 @@ export async function waitForOutput(server, pattern, timeoutMs = 20_000) {
   throw new Error(`Timed out waiting for ${pattern}\n${server.output}`);
 }
 
-export async function waitForPort(port, timeoutMs = 20_000) {
+export async function waitForPort(server, port, timeoutMs = 20_000) {
   const deadline = Date.now() + timeoutMs;
   let lastError;
   while (Date.now() < deadline) {
+    assertProcessRunning(server, `listening on port ${port}`);
     try {
       await new Promise((resolve, reject) => {
         const socket = net.createConnection({ host: "127.0.0.1", port });
@@ -174,8 +295,10 @@ export async function waitForPort(port, timeoutMs = 20_000) {
           reject(error);
         });
       });
+      await assertProcessRemainsRunning(server, `listening on port ${port}`);
       return;
     } catch (error) {
+      assertProcessRunning(server, `listening on port ${port}`);
       lastError = error;
       await new Promise((resolve) => setTimeout(resolve, 50));
     }
@@ -183,18 +306,33 @@ export async function waitForPort(port, timeoutMs = 20_000) {
   throw new Error(`Timed out waiting for port ${port}: ${lastError?.message}`);
 }
 
-export async function waitForHttp(url, options = {}) {
+export async function waitForHttp(
+  serverOrUrl,
+  urlOrOptions = {},
+  maybeOptions = {}
+) {
+  const hasServer = typeof serverOrUrl !== "string";
+  const server = hasServer ? serverOrUrl : undefined;
+  const url = hasServer ? urlOrOptions : serverOrUrl;
+  const options = hasServer ? maybeOptions : urlOrOptions;
   const deadline = Date.now() + (options.timeoutMs ?? 30_000);
   const statuses = options.statuses ?? [200];
   let lastError;
 
   while (Date.now() < deadline) {
+    if (server) assertProcessRunning(server, `serving ${url}`);
     try {
       const response = await fetch(url, options.fetchOptions);
       await response.body?.cancel();
-      if (statuses.includes(response.status)) return;
+      if (statuses.includes(response.status)) {
+        if (server) {
+          await assertProcessRemainsRunning(server, `serving ${url}`);
+        }
+        return;
+      }
       lastError = new Error(`Unexpected readiness status ${response.status}`);
     } catch (error) {
+      if (server) assertProcessRunning(server, `serving ${url}`);
       lastError = error;
     }
     await new Promise((resolve) => setTimeout(resolve, 100));

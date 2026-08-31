@@ -17,7 +17,7 @@ async function exerciseBlog(t, directory, env = {}) {
   await buildNest(cwd);
   const server = startNode("dist/main.js", [], { cwd, env });
   t.after(() => server.stop());
-  await waitForHttp("http://127.0.0.1:3000/blog");
+  await waitForHttp(server, "http://127.0.0.1:3000/blog");
 
   const title = `${directory} e2e`;
   const createResponse = await fetch("http://127.0.0.1:3000/blog", {
@@ -64,14 +64,14 @@ test("chapter8: Nest hello apps and all blog repositories work end to end", asyn
   await buildNest(helloTs);
   const typescriptServer = startNode("dist/main.js", [], { cwd: helloTs });
   t.after(() => typescriptServer.stop());
-  await waitForHttp("http://127.0.0.1:3000/");
+  await waitForHttp(typescriptServer, "http://127.0.0.1:3000/");
   assert.match(await (await fetch("http://127.0.0.1:3000/")).text(), /nestjs/i);
   await typescriptServer.stop();
 
   const helloJs = chapterPath("chapter8", "hello-nestjs-javascript");
   const javascriptServer = startNpm(["run", "start"], { cwd: helloJs });
   t.after(() => javascriptServer.stop());
-  await waitForHttp("http://127.0.0.1:3000/");
+  await waitForHttp(javascriptServer, "http://127.0.0.1:3000/");
   assert.match(await (await fetch("http://127.0.0.1:3000/")).text(), /nestjs/i);
   await javascriptServer.stop();
 

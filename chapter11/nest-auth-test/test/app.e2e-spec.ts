@@ -15,7 +15,13 @@ describe('Authentication and user flow (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(new ValidationPipe());
+    app.useGlobalPipes(
+      new ValidationPipe({
+        forbidNonWhitelisted: true,
+        transform: true,
+        whitelist: true,
+      }),
+    );
     app.use(cookieParser());
     app.use(
       session({
@@ -47,6 +53,11 @@ describe('Authentication and user flow (e2e)', () => {
       .post('/auth/register')
       .send({ email: 'not-an-email', password: 'x', username: 'wapj' })
       .expect(400);
+    await request(server)
+      .post('/auth/register')
+      .send({ ...credentials, email: 'attacker@example.com', id: 1 })
+      .expect(400);
+    await request(server).post('/user/create').send(credentials).expect(404);
 
     const registered = await request(server)
       .post('/auth/register')
@@ -91,12 +102,24 @@ describe('Authentication and user flow (e2e)', () => {
     const sessionUser = await agent.get('/auth/test-guard2').expect(200);
     expect(sessionUser.body.email).toBe(credentials.email);
 
-    const found = await request(server)
+    await request(server)
+      .get(`/user/getUser/${encodeURIComponent(credentials.email)}`)
+      .expect(403);
+    const found = await agent
       .get(`/user/getUser/${encodeURIComponent(credentials.email)}`)
       .expect(200);
     expect(found.body.username).toBe('wapj');
+    expect(found.body.password).toBeUndefined();
 
-    const updated = await request(server)
+    await request(server)
+      .put(`/user/update/${encodeURIComponent(credentials.email)}`)
+      .send({ username: 'wapj-updated', password: 'updated-password' })
+      .expect(403);
+    await agent
+      .put('/user/update/someone-else@example.com')
+      .send({ username: 'attacker', password: 'attacker-password' })
+      .expect(403);
+    const updated = await agent
       .put(`/user/update/${encodeURIComponent(credentials.email)}`)
       .send({ username: 'wapj-updated', password: 'updated-password' })
       .expect(200);
@@ -114,9 +137,15 @@ describe('Authentication and user flow (e2e)', () => {
       .expect(201);
     expect(newPassword.headers['set-cookie']).toBeDefined();
 
-    const deleted = await request(server)
+    await request(server)
+      .delete(`/user/delete/${encodeURIComponent(credentials.email)}`)
+      .expect(403);
+    const deleted = await agent
       .delete(`/user/delete/${encodeURIComponent(credentials.email)}`)
       .expect(200);
     expect(deleted.body.affected).toBe(1);
+    await agent
+      .get(`/user/getUser/${encodeURIComponent(credentials.email)}`)
+      .expect(403);
   });
 });

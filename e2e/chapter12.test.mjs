@@ -20,7 +20,7 @@ test("chapter12: a multipart upload is persisted and served", async (t) => {
     env: { UPLOAD_DIR: temporary.directory },
   });
   t.after(() => server.stop());
-  await waitForHttp("http://127.0.0.1:3000/");
+  await waitForHttp(server, "http://127.0.0.1:3000/");
 
   const form = new FormData();
   form.append(

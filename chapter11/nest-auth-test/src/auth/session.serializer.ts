@@ -23,7 +23,7 @@ export class SessionSerializer extends PassportSerializer {
 
     const user = await this.userSerivice.getUser(payload);
     if (!user) {
-      done(new Error('No User'), null);
+      done(null, false);
       return;
     }
     const { password, ...userInfo } = user;
