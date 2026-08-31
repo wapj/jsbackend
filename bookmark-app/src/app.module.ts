@@ -9,7 +9,7 @@ import { AppController } from './app.controller';
   imports: [
     TypeOrmModule.forRoot({
       type: 'sqlite',
-      database: 'bookmark.db',
+      database: process.env.DATABASE_PATH || 'bookmark.db',
       entities: [__dirname + "/**/*.entity{.ts,.js}"],
       synchronize: true
     }),

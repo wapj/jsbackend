@@ -7,7 +7,7 @@ import { AppService } from './app.service';
 @Module({
   imports: [
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'uploads'),
+      rootPath: process.env.UPLOAD_DIR || join(__dirname, '..', 'uploads'),
       serveRoot: '/uploads',
     }),
   ],

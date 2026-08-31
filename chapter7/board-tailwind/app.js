@@ -70,7 +70,10 @@ app.get("/detail/:id", async (req, res) => {
 // 패스워드 체크
 app.post("/check-password", async (req, res) => {
   const { id, password } = req.body;
-  const post = postService.getPostByIdAndPassword(collection, { id, password });
+  const post = await postService.getPostByIdAndPassword(collection, {
+    id,
+    password,
+  });
   if (!post) {
     return res.status(404).json({ isExist: false });
   } else {

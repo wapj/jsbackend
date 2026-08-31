@@ -1,5 +1,5 @@
 const MongoClient = require('mongodb').MongoClient;
-const uri = "mongodb+srv://mymongo:test1234@cluster0.c4xru.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
+const uri = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/board";
 const client = new MongoClient(uri, { useNewUrlParser: true });
 
 async function run() {

@@ -32,7 +32,6 @@ export class UserController {
   @Put('/update/:email')
   updateUser(@Param('email') email: string, @Body() user: UpdateUserDto) {
     // ❺ 유저 정보 업데이트
-    console.log(user);
     return this.userService.updateUser(email, user);
   }
 

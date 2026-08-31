@@ -14,4 +14,5 @@ let starbucksGrandeSizeCup: brandedCup = {
 };
 
 type impossible = number & string;
+// @ts-expect-error number and string have no overlapping value.
 let testImpossible: impossible = 10; // Error

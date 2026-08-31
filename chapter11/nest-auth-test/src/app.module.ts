@@ -10,7 +10,7 @@ import { ConfigModule } from '@nestjs/config';
   imports: [
     TypeOrmModule.forRoot({
       type: 'sqlite',
-      database: 'auth-test.sqlite',
+      database: process.env.DATABASE_PATH ?? 'auth-test.sqlite',
       autoLoadEntities: true, // for data source
       synchronize: true,
       logging: true,

@@ -17,7 +17,6 @@ export class WeatherController {
   private callWeatherApi(apiUrl: string, apiKey: string): string {
     console.log('날씨 정보 가져오는 중...');
     console.log(apiUrl);
-    console.log(apiKey);
     return '내일은 맑음';
   }
 }

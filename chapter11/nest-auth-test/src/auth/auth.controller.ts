@@ -7,7 +7,7 @@ import {
   Response,
   UseGuards,
 } from '@nestjs/common';
-import { CreateUserDto } from 'src/user/user.dto';
+import { CreateUserDto } from '../user/user.dto';
 import {
   AuthenticatedGuard,
   GoogleAuthGuard,

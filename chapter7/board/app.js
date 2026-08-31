@@ -55,7 +55,10 @@ app.post("/check-password", async (req, res) => {
   const { id, password } = req.body;
 
   // postService의 getPostByIdAndPassword() 함수를 사용해 게시글 데이터 확인
-  const post = postService.getPostByIdAndPassword(collection, { id, password });
+  const post = await postService.getPostByIdAndPassword(collection, {
+    id,
+    password,
+  });
 
   // 데이터가 있으면 isExist true, 없으면 isExist false
   if (!post) {

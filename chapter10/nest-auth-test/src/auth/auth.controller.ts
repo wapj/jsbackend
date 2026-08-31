@@ -8,7 +8,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthenticatedGuard, LocalAuthGuard, LoginGuard } from './auth.guard';
-import { CreateUserDto } from 'src/user/user.dto';
+import { CreateUserDto } from '../user/user.dto';
 import { AuthService } from './auth.service';
 
 @Controller('auth') // ❶ 컨트롤러 생성

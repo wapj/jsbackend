@@ -12,7 +12,7 @@ export interface BlogRepository {
 
 // 블로그 인터페이스를 구현하여 파일에 데이터를 저장하는 클래스
 export class BlogFileRepository implements BlogRepository {
-  FILE_NAME = "./src/blog.data.json";
+  FILE_NAME = process.env.BLOG_DATA_FILE || "./src/blog.data.json";
 
   async getAllPost(): Promise<PostDto[]> {
     const datas = await readFile(this.FILE_NAME, "utf8");

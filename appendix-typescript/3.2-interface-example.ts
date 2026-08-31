@@ -25,12 +25,14 @@ let book: Book = {
 let wrongBookType: BookType = {
   title: "백엔드 개발자 되기",
   price: 10000,
+  // @ts-expect-error author must be a string.
   author: 1234,
 };
 
 let wrongBook: Book = {
   title: "백엔드 개발자 되기",
   price: 10000,
+  // @ts-expect-error author must be a string.
   author: 1234,
 };
 
@@ -68,4 +70,5 @@ let seungkyoo: Citizen = {
   age: 40,
 };
 
+// @ts-expect-error age is intentionally read-only.
 seungkyoo.age = 39; // Error
