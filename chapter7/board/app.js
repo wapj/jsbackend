@@ -171,9 +171,16 @@ app.delete("/delete-comment", async (req, res) => {
 });
 
 let collection;
-app.listen(3000, async () => {
-  console.log("Server started");
+async function startServer() {
   const mongoClient = await mongodbConnection();
   collection = mongoClient.db().collection("post");
-  console.log("MongoDB connected");
+  app.listen(3000, () => {
+    console.log("Server started");
+    console.log("MongoDB connected");
+  });
+}
+
+startServer().catch((error) => {
+  console.error("Failed to start server", error);
+  process.exitCode = 1;
 });

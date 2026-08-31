@@ -1,0 +1,15 @@
+{
+  "name": "jsbackend-e2e",
+  "private": true,
+  "engines": {
+    "node": "24.20.0"
+  },
+  "scripts": {
+    "install:e2e": "node e2e/install.mjs",
+    "test:e2e": "node e2e/run.mjs"
+  },
+  "devDependencies": {
+    "socket.io-client": "4.5.3",
+    "ws": "8.11.0"
+  }
+}
